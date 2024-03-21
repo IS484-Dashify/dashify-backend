@@ -2,7 +2,7 @@ from flask import jsonify, request
 from models import Components
 from app import app, db
 import requests
-from dotenv import load_env()
+from dotenv import load_env
 from os import environ
 load_env()
 
