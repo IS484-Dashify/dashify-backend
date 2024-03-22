@@ -3,16 +3,15 @@ from models import db, Users
 from helper import doesComponentExist, doesThresholdExist
 from app import app
 
-@app.route('/get-user/<int:uid>', methods=['GET'])
-def get_user_by_id(uid):
-    user = Users.query.filter_by(uid=uid).first()
-    user = user.json()
-    return jsonify({'results': user})
+# @app.route('/get-user/<int:uid>', methods=['GET'])
+# def get_user_by_id(uid):
+#     user = Users.query.filter_by(uid=uid).first()
+#     user = user.json()
+#     return jsonify({'results': user})
 
-@app.route('/get-user/<str:email>', methods=['GET'])
+@app.route('/get-user/<string:email>', methods=['GET'])
 def get_user_by_email(email):
-    # TODO: Define User model
-    user = Users.query.filter_by(email).first()
+    user = Users.query.filter_by(email=email).first()
     user = user.json()
     return jsonify({'results': user})
 
@@ -30,7 +29,7 @@ def add_user():
     db.session.commit()
     return jsonify({'message': 'User added successfully'})
 
-@app.route('/update-user/<str:email>', methods=['PUT'])
+@app.route('/update-user/<string:email>', methods=['PUT'])
 def update_user(email):
     user = Users.query.filter_by(email=email).first()
     data = request.get_json()
@@ -38,7 +37,7 @@ def update_user(email):
     db.session.commit()
     return jsonify({'message': 'User updated successfully'})
 
-@app.route('/delete-user/<str:email>', methods=['DELETE'])
+@app.route('/delete-user/<string:email>', methods=['DELETE'])
 def delete_user(email):
     user = Users.query.filter_by(email=email).first()
     db.session.delete(user)
