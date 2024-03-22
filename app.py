@@ -15,7 +15,6 @@ load_dotenv()
 def create_app():
     
     app = Flask(__name__)
-    # print("dbURL: ", environ.get('dbURL'))
     app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
@@ -27,8 +26,8 @@ def create_app():
     app.logger.addHandler(log_handler)
     app.logger.setLevel(logging.INFO)
 
-    db = SQLAlchemy(app)  # Moved SQLAlchemy initialization here
-    from models import db  # Moved import to avoid circular import
+    # db = SQLAlchemy(app)  # Moved SQLAlchemy initialization here
+    # from models import db  # Moved import to avoid circular import
     db.init_app(app)
     CORS(app)
     return app

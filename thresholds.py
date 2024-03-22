@@ -21,6 +21,10 @@ def create_threshold():
     request_cid = data["cid"]
     request_warning = data["Warning"]
     request_critical = data["Critical"]
+    request_traffic_in_warning = data["TrafficInWarning"]
+    request_traffic_in_critical = data["TrafficInCritical"]
+    request_traffic_out_warning = data["TrafficOutWarning"]
+    request_traffic_out_critical = data["TrafficOutCritical"]
 
     # check if component exists
     componentExists = doesComponentExist(request_cid)
@@ -31,7 +35,7 @@ def create_threshold():
         if thresholdExists:
             return jsonify({'error': 'Threshold already exists'}), 400
         try:
-            new_threshold = Thresholds(cid=request_cid, warning=request_warning, critical=request_critical)
+            new_threshold = Thresholds(cid=request_cid, warning=request_warning, critical=request_critical, traffic_in_warning=request_traffic_in_warning, traffic_in_critical=request_traffic_in_critical, traffic_out_warning=request_traffic_out_warning, traffic_out_critical=request_traffic_out_critical)
             db.session.add(new_threshold)
             db.session.commit()
             return_message = {

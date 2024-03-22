@@ -4,6 +4,7 @@ from app import app, db
 import requests
 from dotenv import load_dotenv
 from os import environ
+import time
 load_dotenv()
 
 @app.route('/get-all-components', methods=['GET'])
@@ -29,11 +30,22 @@ def add_component():
     component = Components(**data)
     db.session.add(component)
     db.session.commit()
+    time.sleep(10)
+    try:
+        componentExist = Components.query.filter_by(cid=data.get('cid')).first()
+        print(componentExist)
+    except Exception as e:
+        return jsonify({'error': 'There was an error after calling the add component endpoint: ' + str(e)})
+    
     try:
         requests.post(environ.get('createThresholdURL'), json={
             "cid": data.get('cid'),
             "Warning": 80,
-            "Critical": 90
+            "Critical": 90,
+            "TrafficInWarning": 800,
+            "TrafficInCritical": 1000,
+            "TrafficOutWarning": 50000,
+            "TrafficOutCritical": 10000
         })
     except Exception as e:
         return jsonify({'error': 'There was an error creating the new component\'s threshold: ' + str(e)})
