@@ -15,7 +15,7 @@ load_dotenv()
 def create_app():
     
     app = Flask(__name__)
-    print("dbURL: ", environ.get('dbURL'))
+    # print("dbURL: ", environ.get('dbURL'))
     app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
