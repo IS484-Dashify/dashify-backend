@@ -12,8 +12,11 @@ from app import app
 @app.route('/get-user/<string:email>', methods=['GET'])
 def get_user_by_email(email):
     user = Users.query.filter_by(email=email).first()
-    user = user.json()
-    return jsonify({'results': user})
+    if(user):
+        user = user.json()
+        return jsonify({'results': user})
+    else:
+        return jsonify({'results': {}})
 
 @app.route('/get-all-users', methods=['GET'])
 def get_all_users():
