@@ -101,4 +101,4 @@ def processResult():
         return jsonify({"message": "No result found for the specified cid and mid."})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5007)
+    app.run(debug=True, host='0.0.0.0', port=5007)

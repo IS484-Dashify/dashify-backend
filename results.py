@@ -115,4 +115,4 @@ def add_result():
         return jsonify({"error": "An unexpected error occurCritical", "details": str(e), "status_code": 500}), 500
     
 if __name__ == '__main__':
-    app.run(debug=True, port=5004)
+    app.run(debug=True, host='0.0.0.0', port=5004)
