@@ -3,8 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class Machines(db.Model):
+    __tablename__ = 'MACHINES'
     mid = db.Column(db.Integer, primary_key=True)
-    sid = db.Column(db.Integer, db.ForeignKey('services.sid'))
+    sid = db.Column(db.Integer, db.ForeignKey('SERVICES.sid'))
     name = db.Column(db.Text)
     location = db.Column(db.Text)
     country = db.Column(db.Text)
@@ -21,9 +22,10 @@ class Machines(db.Model):
         }
 
 class Results(db.Model):
+    __tablename__ = 'RESULTS'
     datetime = db.Column(db.DateTime, primary_key=True)
-    mid = db.Column(db.Integer, db.ForeignKey('machines.mid'), primary_key=True)
-    cid = db.Column(db.Integer, db.ForeignKey('components.cid'), primary_key=True)
+    mid = db.Column(db.Integer, db.ForeignKey('MACHINES.mid'), primary_key=True)
+    cid = db.Column(db.Integer, db.ForeignKey('COMPONENTS.cid'), primary_key=True)
     disk_usage = db.Column(db.Float)
     traffic_in = db.Column(db.Integer)
     traffic_out = db.Column(db.Integer)
@@ -51,6 +53,7 @@ class Results(db.Model):
         }
 
 class Services(db.Model):
+    __tablename__ = 'SERVICES'
     sid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
 
@@ -61,8 +64,9 @@ class Services(db.Model):
         }
     
 class Components(db.Model):
+    __tablename__ = 'COMPONENTS'
     cid = db.Column(db.Integer, primary_key=True)
-    mid = db.Column(db.Integer, db.ForeignKey('machines.mid'))
+    mid = db.Column(db.Integer, db.ForeignKey('MACHINES.mid'))
     name = db.Column(db.Text)
 
     def json(self):
@@ -73,7 +77,8 @@ class Components(db.Model):
         }
 
 class Thresholds(db.Model):
-    cid = db.Column(db.Integer, db.ForeignKey('components.cid'), primary_key=True)
+    __tablename__ = 'THRESHOLDS'
+    cid = db.Column(db.Integer, db.ForeignKey('COMPONENTS.cid'), primary_key=True)
     warning = db.Column(db.Float)
     critical = db.Column(db.Float)
     traffic_in_warning = db.Column(db.Float)
@@ -93,6 +98,7 @@ class Thresholds(db.Model):
         }
     
 class Pusher(db.Model):
+    __tablename__ = 'PUSHER'
     pid = db.Column(db.Integer, primary_key=True)
     appId = db.Column(db.Text)
     key = db.Column(db.Text)
@@ -111,10 +117,10 @@ class Pusher(db.Model):
         }
     
 class Notifications(db.Model):
-    __tablename__ = 'notifications'
+    __tablename__ = 'NOTIFICATIONS'
 
     nid = db.Column(db.Integer, primary_key=True)
-    cid = db.Column(db.Integer, db.ForeignKey('components.cid'))
+    cid = db.Column(db.Integer, db.ForeignKey('COMPONENTS.cid'))
     isRead = db.Column(db.Boolean, default=False)
     reason = db.Column(db.Text)
     datetime = db.Column(db.DateTime)
@@ -131,6 +137,7 @@ class Notifications(db.Model):
         }
 
 class Users(db.Model):
+    __tablename__ = 'USERS'
     uid = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.Text)
 
