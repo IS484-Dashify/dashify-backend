@@ -54,9 +54,9 @@ def add_component():
         requests.post(environ.get('setupEnvURL'), json={
             "cid": data.get('cid'),
             "email": environ.get('authorisedUserEmail'),
-            "vmUsername": environ.get('vmUsername'),
-            "vmIpAddress": environ.get('vmIpAddress'),
-            "vmPassword": environ.get('vmPassword')
+            "vmUsername": data.get('vmUsername'), # target vm's username
+            "vmIpAddress": data.get('vmIpAddress'), # target vm's ip address
+            "vmPassword": data.get('vmPassword') # target vm's password
         })
     except Exception as e:
         return jsonify({'error': 'There was an error setting up the log monitoring environment for the new component: ' + str(e)})
