@@ -27,7 +27,10 @@ def get_cid_values_by_mid(mid):
 @app.route('/add-component', methods=['POST'])
 def add_component():
     data = request.get_json()
-    component = Components(data.get('cid'), data.get('mid'), data.get('name'))
+    component = Components()
+    component.cid = data.get('cid') # hotfix, define __init__ in models.py
+    component.mid = data.get('mid')
+    component.name = data.get('name')
     db.session.add(component)
     db.session.commit()
     time.sleep(10)
