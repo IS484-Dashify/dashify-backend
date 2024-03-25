@@ -80,8 +80,9 @@ for entry in data_past_week:
     cpu_usage = entry["cpu_usage"]
     memory_usage = entry["memory_usage"]
     datetime_format = entry["datetime"]
-    datetime_str = datetime.strptime(entry["datetime"], "%H:%M:%S").replace(tzinfo=timezone.utc)
-    hour = datetime_str.split(':')[0]  # Extract hour from datetime
+    datetime_str = datetime.strptime(entry["datetime"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    timing = datetime_str .split(" ")[1]
+    hour = timing.split(':')[0]  # Extract hour from datetime
     sum_by_hour_cid[hour][cid]['DISK_USAGE'] += disk_usage
     sum_by_hour_cid[hour][cid]['TRAFFIC_OUT'] += traffic_out
     sum_by_hour_cid[hour][cid]['CPU_USAGE'] += cpu_usage
