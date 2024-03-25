@@ -152,11 +152,12 @@ for cid, metrics in percentage_change_by_cid.items():
         if change > 20:
             reason = f"{metric} up {change}% from yesterday"
             date = datetime.now()
+            datetime_string = date.strftime('%Y-%m-%d %H:%M:%S')
             notification_data = {
                 'cid': cid,
                 'isread': 1,
                 'reason' : reason,
-                'datetime': date,
+                'datetime': datetime_string,
                 'status': 'Analysis'
             }
 

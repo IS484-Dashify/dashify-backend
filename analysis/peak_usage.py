@@ -80,7 +80,7 @@ for entry in data_past_week:
     cpu_usage = entry["cpu_usage"]
     memory_usage = entry["memory_usage"]
     datetime_format = entry["datetime"]
-    datetime_str = datetime_format.strftime("%H:%M:%S")
+    datetime_str = datetime.strptime(entry["datetime"], "%H:%M:%S").replace(tzinfo=timezone.utc)
     hour = datetime_str.split(':')[0]  # Extract hour from datetime
     sum_by_hour_cid[hour][cid]['DISK_USAGE'] += disk_usage
     sum_by_hour_cid[hour][cid]['TRAFFIC_OUT'] += traffic_out
@@ -124,11 +124,12 @@ for cid, metric_data in highest_hour_by_metric.items():
         end_hour = int(hour + 1)
         reason = f"{metric} is highest at {highest_average_by_metric[cid][metric]} from {hour}00 to {end_hour}00 over the past week"
         date = datetime.now()
+        datetime_string = date.strftime('%Y-%m-%d %H:%M:%S')
         notification_data = {
                 'cid': cid,
                 'isread': 1,
                 'reason' : reason,
-                'datetime': date,
+                'datetime': datetime_string,
                 'status': 'Analysis'
         }
         json_data = json.dumps(notification_data)
