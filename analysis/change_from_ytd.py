@@ -41,7 +41,8 @@ def push_notif(json_data):
     url = "http://127.0.0.1:5008/add-notification"
 
     try:
-        response = requests.post(url, data=json_data)
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, headers=headers, data=json_data)
 
         if response.content:
             response_data = response.json()
