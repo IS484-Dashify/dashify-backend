@@ -40,7 +40,7 @@ def add_notification():
 
     newNotification = Notifications(
         cid = safe_convert(data['cid'], int),
-        isread = safe_convert(data['isread'], int),
+        isread = data['isread'],
         reason = data['reason'],
         datetime = data['datetime'],
         status = data['status']
