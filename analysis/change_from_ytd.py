@@ -159,7 +159,7 @@ for cid, metrics in percentage_change_by_cid.items():
             datetime_string = date.strftime('%Y-%m-%d %H:%M:%S')
             notification_data = {
                 'cid': cid,
-                'isread': 1,
+                'isread': 0,
                 'reason' : reason,
                 'datetime': datetime_string,
                 'status': 'Analysis'

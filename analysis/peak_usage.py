@@ -44,10 +44,14 @@ def push_notif(json_data):
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, headers=headers, data=json_data)
 
-        if response.status_code == 200:
-            print("Notification added successfully:", response.json())
+        if response.content:
+            response_data = response.json()
+            if response.ok:
+                print("Notification added successfully:", response_data)
+            else:
+                print("Failed to add notification:", response.status_code, response_data)
         else:
-            print("Failed to add notification:", response.status_code, response.json())
+            print("No content in the response")
     
     except requests.exceptions.RequestException as e:
         # If an error occurs during the request, print the error message
@@ -128,7 +132,7 @@ for cid, metric_data in highest_hour_by_metric.items():
         datetime_string = date.strftime('%Y-%m-%d %H:%M:%S')
         notification_data = {
                 'cid': cid,
-                'isread': 1,
+                'isread': 0,
                 'reason' : reason,
                 'datetime': datetime_string,
                 'status': 'Analysis'
