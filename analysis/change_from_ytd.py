@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 import requests
+import json
 
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
@@ -27,18 +28,34 @@ def fetch_data_from_microservice():
         # If an error occurs during the request, print the error message
         print("Error fetching data from microservice:", e)
         return None
-
-
-extracted_data = fetch_data_from_microservice()
-# print(extracted_data)
-
+    
 def filter_data_by_datetime(data, start_datetime, end_datetime):
     filtered_data = []
-    for entry in extracted_data:
+    for entry in data:
         entry_datetime = datetime.strptime(entry["datetime"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
         if start_datetime <= entry_datetime <= end_datetime:
             filtered_data.append(entry)
     return filtered_data
+
+def push_notif(json_data):
+    url = "http://127.0.0.1:5008/add-notification"
+
+    try:
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, headers=headers, data=json_data)
+
+        if response.status_code == 200:
+            print("Notification added successfully:", response.json())
+        else:
+            print("Failed to add notification:", response.status_code, response.json())
+    
+    except requests.exceptions.RequestException as e:
+        # If an error occurs during the request, print the error message
+        print("Error adding notification:", e)
+        return None
+
+extracted_data = fetch_data_from_microservice()
+# print(extracted_data)
 
 # Get yesterday's date and the start and end timestamps for yesterday
 # yesterday = datetime.now(timezone.utc) - timedelta(days=1)
@@ -130,6 +147,21 @@ for cid in average_by_cid_ytd_data:
         for metric in average_by_cid_ytd_data[cid]
     }
 
-print("change:", percentage_change_by_cid)
+for cid, metrics in percentage_change_by_cid.items():
+    for metric, change in metrics.items():
+        if change > 20:
+            reason = f"{metric} up {change}% from yesterday"
+            date = datetime.now()
+            notification_data = {
+                'cid': cid,
+                'isread': 1,
+                'reason' : reason,
+                'datetime': date,
+                'status': 'Analysis'
+            }
+
+            json_data = json.dumps(notification_data)
+            push_notif(json_data)
+            
 
 
