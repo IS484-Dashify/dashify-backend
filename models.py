@@ -121,7 +121,7 @@ class Notifications(db.Model):
 
     nid = db.Column(db.Integer, primary_key=True)
     cid = db.Column(db.Integer, db.ForeignKey('COMPONENTS.cid'))
-    isRead = db.Column(db.Boolean, default=False)
+    isread = db.Column(db.Boolean, default=False)
     reason = db.Column(db.Text)
     datetime = db.Column(db.DateTime)
     status = db.Column(db.Text)
@@ -130,7 +130,7 @@ class Notifications(db.Model):
         return {
             "nid": self.nid,
             "cid": self.cid,
-            "isRead": self.isRead,
+            "isread": self.isread,
             "reason": self.reason,
             "datetime": self.datetime.strftime('%Y-%m-%d %H:%M:%S'),  # Format datetime as string
             "status": self.status
