@@ -10,8 +10,7 @@ def delete_testdata():
         # Assuming you want to delete data between two specific datetimes
         start_datetime = "2024-03-04 00:00:00"
         end_datetime = "2024-03-10 23:59:59"
-        def delete_testdata():
-    url = "http://4.231.173.235:5004/delete-result"
+
         # Create a JSON payload containing the start and end datetimes
         data = {"start_datetime": start_datetime, "end_datetime": end_datetime}
         
