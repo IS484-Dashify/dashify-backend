@@ -10,7 +10,8 @@ def delete_testdata():
         # Assuming you want to delete data between two specific datetimes
         start_datetime = "2024-03-04 00:00:00"
         end_datetime = "2024-03-10 23:59:59"
-        
+        def delete_testdata():
+    url = "http://4.231.173.235:5004/delete-result"
         # Create a JSON payload containing the start and end datetimes
         data = {"start_datetime": start_datetime, "end_datetime": end_datetime}
         
@@ -27,7 +28,26 @@ def delete_testdata():
         # If an error occurs during the request, print the error message
         print("Error deleting test data:", e)
 
-delete_testdata()
+def delete_notifications():
+    url = "http://4.231.173.235:5008/delete-notification"
+
+    try:
+        # Send a DELETE request to the specified URL
+        response = requests.delete(url)
+        
+        # Check the response status code
+        if response.status_code == 200:
+            print("Notifications deleted successfully.")
+        else:
+            print(f"Failed to delete notifications. Status code: {response.status_code}")
+    
+    except requests.exceptions.RequestException as e:
+        # If an error occurs during the request, print the error message
+        print("Error deleting notifications:", e)
+
+# Call the function to delete notifications
+delete_notifications()
+
 
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
@@ -116,15 +136,12 @@ count_by_cid_ytd_data = defaultdict(lambda: defaultdict(int))
 for entry in data_yesterday:
     cid = entry["cid"]
     disk_usage = entry["disk_usage"]
-    traffic_out = entry["traffic_out"]
     cpu_usage = entry["cpu_usage"]
     memory_usage = entry["memory_usage"]
     sum_by_cid_ytd_data[cid]['DISK_USAGE'] += disk_usage
-    # sum_by_cid_ytd_data[cid]['TRAFFIC_OUT'] += traffic_out
     sum_by_cid_ytd_data[cid]['CPU_USAGE'] += cpu_usage
     sum_by_cid_ytd_data[cid]['MEMORY_USAGE'] += memory_usage
     count_by_cid_ytd_data[cid]['DISK_USAGE'] += 1
-    # count_by_cid_ytd_data[cid]['TRAFFIC_OUT'] += 1
     count_by_cid_ytd_data[cid]['CPU_USAGE'] += 1
     count_by_cid_ytd_data[cid]['MEMORY_USAGE'] += 1
 
@@ -148,15 +165,12 @@ count_by_cid_today_data = defaultdict(lambda: defaultdict(int))
 for entry in data_today:
     cid = entry["cid"]
     disk_usage = entry["disk_usage"]
-    traffic_out = entry["traffic_out"]
     cpu_usage = entry["cpu_usage"]
     memory_usage = entry["memory_usage"]
     sum_by_cid_today_data[cid]['DISK_USAGE'] += disk_usage
-    sum_by_cid_today_data[cid]['TRAFFIC_OUT'] += traffic_out
     sum_by_cid_today_data[cid]['CPU_USAGE'] += cpu_usage
     sum_by_cid_today_data[cid]['MEMORY_USAGE'] += memory_usage
     count_by_cid_today_data[cid]['DISK_USAGE'] += 1
-    count_by_cid_today_data[cid]['TRAFFIC_OUT'] += 1
     count_by_cid_today_data[cid]['CPU_USAGE'] += 1
     count_by_cid_today_data[cid]['MEMORY_USAGE'] += 1
 

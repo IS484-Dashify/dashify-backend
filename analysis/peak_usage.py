@@ -80,7 +80,6 @@ count_by_hour_cid = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 for entry in data_past_week:
     cid = entry["cid"]
     disk_usage = entry["disk_usage"]
-    # traffic_out = entry["traffic_out"]
     cpu_usage = entry["cpu_usage"]
     memory_usage = entry["memory_usage"]
     datetime_format = entry["datetime"]
@@ -88,12 +87,9 @@ for entry in data_past_week:
     timing = str(datetime_str).split(" ")[1]
     hour = timing.split(':')[0]  # Extract hour from datetime
     sum_by_hour_cid[hour][cid]['DISK_USAGE'] += disk_usage
-    # sum_by_hour_cid[hour][cid]['TRAFFIC_OUT'] += traffic_out
     sum_by_hour_cid[hour][cid]['CPU_USAGE'] += cpu_usage
     sum_by_hour_cid[hour][cid]['MEMORY_USAGE'] += memory_usage
-    
     count_by_hour_cid[hour][cid]['DISK_USAGE'] += 1
-    # count_by_hour_cid[hour][cid]['TRAFFIC_OUT'] += 1
     count_by_hour_cid[hour][cid]['CPU_USAGE'] += 1
     count_by_hour_cid[hour][cid]['MEMORY_USAGE'] += 1
 

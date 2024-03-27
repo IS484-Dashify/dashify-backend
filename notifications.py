@@ -54,5 +54,24 @@ def add_notification():
         app.logger.error('An error occurred: %s', e)
         return jsonify({"error": "An unexpected error occurCritical", "details": str(e), "status_code": 500}), 500
     
+@app.route('/delete-notification', methods=['DELETE'])
+def delete_result():
+    try:
+        # Perform the deletion based on the provided criteria
+        deleted_count = Notifications.query.filter_by(status='Analysis').delete()
+        
+        # Commit the changes to the database
+        db.session.commit()
+
+        # Return a response indicating the number of rows deleted
+        return jsonify({"message": f"{deleted_count} rows deleted successfully.", "status_code": 200}), 200
+    
+    except Exception as e:  
+        # Log any errors that occur
+        app.logger.error('An error occurred during deletion: %s', e)
+        # Return an error response
+        return jsonify({"error": "An unexpected error occurred during deletion.", "details": str(e), "status_code": 500}), 500
+
+    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5008)
