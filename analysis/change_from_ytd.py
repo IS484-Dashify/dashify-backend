@@ -94,11 +94,11 @@ for entry in data_yesterday:
     cpu_usage = entry["cpu_usage"]
     memory_usage = entry["memory_usage"]
     sum_by_cid_ytd_data[cid]['DISK_USAGE'] += disk_usage
-    sum_by_cid_ytd_data[cid]['TRAFFIC_OUT'] += traffic_out
+    # sum_by_cid_ytd_data[cid]['TRAFFIC_OUT'] += traffic_out
     sum_by_cid_ytd_data[cid]['CPU_USAGE'] += cpu_usage
     sum_by_cid_ytd_data[cid]['MEMORY_USAGE'] += memory_usage
     count_by_cid_ytd_data[cid]['DISK_USAGE'] += 1
-    count_by_cid_ytd_data[cid]['TRAFFIC_OUT'] += 1
+    # count_by_cid_ytd_data[cid]['TRAFFIC_OUT'] += 1
     count_by_cid_ytd_data[cid]['CPU_USAGE'] += 1
     count_by_cid_ytd_data[cid]['MEMORY_USAGE'] += 1
 
