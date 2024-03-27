@@ -5,7 +5,7 @@ import json
 
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
-    url = "http://127.0.0.1:5004/get-all-results"
+    url = "http://4.231.173.235:5004/get-all-results"
     
     try:
         # Make a GET request to the microservice's API endpoint
@@ -38,7 +38,7 @@ def filter_data_by_datetime(data, start_datetime, end_datetime):
     return filtered_data
 
 def push_notif(json_data):
-    url = "http://127.0.0.1:5008/add-notification"
+    url = "http://4.231.173.235:5008/add-notification"
 
     try:
         headers = {'Content-Type': 'application/json'}
@@ -62,18 +62,18 @@ extracted_data = fetch_data_from_microservice()
 # print(extracted_data)
 
 # Get yesterday's date and the start and end timestamps for yesterday
-# yesterday = datetime.now(timezone.utc) - timedelta(days=1)
-# start_of_yesterday = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0, tzinfo=timezone.utc)
-# end_of_yesterday = datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, tzinfo=timezone.utc)
-start_of_yesterday = datetime(2024, 3, 4, 0, 0, 0, tzinfo=timezone.utc)
-end_of_yesterday = datetime(2024, 3, 4, 23, 59, 59, tzinfo=timezone.utc)
+yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+start_of_yesterday = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0, tzinfo=timezone.utc)
+end_of_yesterday = datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59, tzinfo=timezone.utc)
+# start_of_yesterday = datetime(2024, 3, 4, 0, 0, 0, tzinfo=timezone.utc)
+# end_of_yesterday = datetime(2024, 3, 4, 23, 59, 59, tzinfo=timezone.utc)
 
 # Get today's date and the start and end timestamps for today
-# today = datetime.now(timezone.utc)
-# start_of_today = datetime(today.year, today.month, today.day, 0, 0, 0, tzinfo=timezone.utc)
-# end_of_today = datetime(today.year, today.month, today.day, 23, 59, 59, tzinfo=timezone.utc)
-start_of_today = datetime(2024, 3, 5, 0, 0, 0, tzinfo=timezone.utc)
-end_of_today = datetime(2024, 3, 5, 23, 59, 59, tzinfo=timezone.utc)
+today = datetime.now(timezone.utc)
+start_of_today = datetime(today.year, today.month, today.day, 0, 0, 0, tzinfo=timezone.utc)
+end_of_today = datetime(today.year, today.month, today.day, 23, 59, 59, tzinfo=timezone.utc)
+# start_of_today = datetime(2024, 3, 5, 0, 0, 0, tzinfo=timezone.utc)
+# end_of_today = datetime(2024, 3, 5, 23, 59, 59, tzinfo=timezone.utc)
 
 
 # Fetch data for yesterday and today from the database

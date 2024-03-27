@@ -5,8 +5,8 @@ import json
 
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
-    url = "http://127.0.0.1:5004/get-all-results"
-    
+    url = "http://4.231.173.235:5004/get-all-results"
+
     try:
         # Make a GET request to the microservice's API endpoint
         response = requests.get(url)
@@ -38,7 +38,7 @@ def filter_data_by_datetime(data, start_datetime, end_datetime):
     return filtered_data
 
 def push_notif(json_data):
-    url = "http://127.0.0.1:5008/add-notification"
+    url = "http://4.231.173.235:5008/add-notification"
 
     try:
         headers = {'Content-Type': 'application/json'}
@@ -63,8 +63,8 @@ def push_notif(json_data):
 extracted_data = fetch_data_from_microservice()
 
 # Get start and end timestamps for the past week
-# end_time = datetime.now(timezone.utc)
-end_time = datetime(2024, 3, 10, 23, 59, 59, tzinfo=timezone.utc)
+end_time = datetime.now(timezone.utc)
+# end_time = datetime(2024, 3, 10, 23, 59, 59, tzinfo=timezone.utc)
 start_time = end_time - timedelta(days=7)
 
 
