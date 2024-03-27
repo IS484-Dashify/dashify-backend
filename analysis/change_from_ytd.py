@@ -44,9 +44,6 @@ def delete_notifications():
         # If an error occurs during the request, print the error message
         print("Error deleting notifications:", e)
 
-# Call the function to delete notifications
-delete_notifications()
-
 
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
