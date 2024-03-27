@@ -3,6 +3,32 @@ from collections import defaultdict
 import requests
 import json
 
+def delete_testdata():
+    url = "http://4.231.173.235:5004/delete-result"
+    
+    try:
+        # Assuming you want to delete data between two specific datetimes
+        start_datetime = "2024-03-04 00:00:00"
+        end_datetime = "2024-03-10 23:59:59"
+        
+        # Create a JSON payload containing the start and end datetimes
+        data = {"start_datetime": start_datetime, "end_datetime": end_datetime}
+        
+        # Send a DELETE request with the JSON payload
+        response = requests.delete(url, json=data)
+        
+        # Check the response status code
+        if response.status_code == 200:
+            print("Test data deletion successful:", response.json())
+        else:
+            print("Failed to delete test data:", response.status_code, response.json())
+    
+    except requests.exceptions.RequestException as e:
+        # If an error occurs during the request, print the error message
+        print("Error deleting test data:", e)
+
+delete_testdata()
+
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
     url = "http://4.231.173.235:5004/get-all-results"
