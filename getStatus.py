@@ -54,39 +54,43 @@ def get_service_status_details(sid):
 
 @app.route('/get-all-service-name-and-status', methods=['GET'])
 def get_all_service_name_and_status():
-    output = []
-    response1 = requests.get('http://127.0.0.1:5001/get-all-services')
-    services = response1.json()['results']
-        
-    # return jsonify({"msg": "Hello World"}), 200
+    try:
+        output = []
+        response1 = requests.get('http://127.0.0.1:5001/get-all-services')
+        services = response1.json()['results']
+            
+        # return jsonify({"msg": "Hello World"}), 200
 
-    for service in services:
-        sid = service['sid']
-        response2 = requests.get(f'http://127.0.0.1:5002/get-mid-by-sid/{sid}')
-        mids = response2.json()['results']
-        statuses = []
-        
-        for mid in mids:
-            response3 = requests.get(f'http://127.0.0.1:5003/get-cid-by-mid/{mid}')
-            cids = response3.json()['results']
+        for service in services:
+            sid = service['sid']
+            response2 = requests.get(f'http://127.0.0.1:5002/get-mid-by-sid/{sid}')
+            mids = response2.json()['results']
+            statuses = []
+            
+            for mid in mids:
+                response3 = requests.get(f'http://127.0.0.1:5003/get-cid-by-mid/{mid}')
+                cids = response3.json()['results']
 
-            for cid in cids:
-                response4 = requests.get(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}')
-                component_status = response4.json()['status']
-                statuses.append(component_status)
-        
-        if 'Critical' in statuses:
-            output.append({"sid": sid, "name":service['name'] ,"status" : 'Critical'})
-        
-        elif 'Warning' in statuses:
-            output.append({"sid": sid, "name":service['name'] ,"status" : 'Warning'})
-        
-        else:
-            output.append({"sid": sid, "name":service['name'] ,"status" : 'Normal'})
-
+                for cid in cids:
+                    response4 = requests.get(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}')
+                    component_status = response4.json()['status']
+                    statuses.append(component_status)
+            
+            if 'Critical' in statuses:
+                output.append({"sid": sid, "name":service['name'] ,"status" : 'Critical'})
+            
+            elif 'Warning' in statuses:
+                output.append({"sid": sid, "name":service['name'] ,"status" : 'Warning'})
+            
+            else:
+                output.append({"sid": sid, "name":service['name'] ,"status" : 'Normal'})
+    except Exception as e:
+        # Handle the exception
+        error_message = str(e)
+        return jsonify({'error': error_message}), 500
 
     # Return the final response
-    return jsonify(output)
+    return jsonify(output), 200
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from models import db, Users
+from models import db, Users    
 from helper import doesComponentExist, doesThresholdExist
 from app import app
 
