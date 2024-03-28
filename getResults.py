@@ -65,7 +65,7 @@ def processResult():
                     if metricStatus == 'Critical' or metricStatus == 'Warning':
                         statuses["traffic_out"] = metricStatus
             
-        # TODO: 2. if any status are Critical/Warning, fire to notification system
+        # * 2. if any status are Critical/Warning, fire to notification system
         print("Statuses:", statuses)
         for metric, status in statuses.items():
             if(status == 'Critical' or status == 'Warning'):
@@ -78,31 +78,30 @@ def processResult():
                     "status": status
                 }
                 requests.post("http://127.0.0.1:5008/add-notification", json=notifJsonBody, headers = {'Content-Type': 'application/json'})        
-        return jsonify({"message": "Data processed successfully"}), 200
-        # TODO: 3. Store the data in the database
-        # response = requests.post("http://127.0.0.1:5004/add-result", 
-        #     json=rawResult, 
-        #     headers = {
-        #         'Content-Type': 'application/json', 
-        #     }
-        # )
-        # response = response.json()
+
+        # * 3. Store the data in the database
+        response = requests.post("http://127.0.0.1:5004/add-result", 
+            json=rawResult, 
+            headers = {
+                'Content-Type': 'application/json', 
+            }
+        )
+        response = response.json()
         # print("Response status:", response)
-        # if response["status_code"] == 200:
-        #     response_data = {
-        #         'message': 'Data processed successfully',
-        #         'status_code': response["status_code"]
-        #     }
-        #     return jsonify(response_data), 200
-        # else:
-        #     # Return relevant information from the response
-        #     response_data = {
-        #         'error': 'Failed to process data',
-        #         'status_code': response["status_code"]
-        #     }
-        #     return jsonify(response_data), 500
-        # else:
-        #     return jsonify({"message": "No result found for the specified cid and mid."})
+        if response["status_code"] == 200:
+            response_data = {
+                'message': 'Data processed successfully',
+                'status_code': response["status_code"]
+            }
+            return jsonify(response_data), 200
+        else:
+            # Return relevant information from the response
+            response_data = {
+                'error': 'Failed to process data',
+                'status_code': response["status_code"]
+            }
+            return jsonify(response_data), 500
+        
     except Exception as e:
         # Handle the exception
         error_message = str(e)
