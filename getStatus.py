@@ -29,7 +29,11 @@ def get_service_status_details(sid):
                         'iso': machine_details['iso']}
 
         for cid in cids:
-            response5 = requests.get(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}')
+
+            response = requests.get(f'http://127.0.0.1:5005/get-thresholds-by-cid/{cid}').json()
+            thresholds = response['results']
+            
+            response5 = requests.post(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}', json = thresholds, headers = {'Content-Type': 'application/json'})
             component_status = response5.json()['status']
             response6 = requests.get(f'http://127.0.0.1:5003/get-component-details-by-cid/{cid}')
             component_name = response6.json()['name']
