@@ -36,7 +36,7 @@ def get_metrics_by_cid(cid, rows):
 def get_last_result(cid, mid):
     try:
         last_result = Results.query.filter_by(cid=cid, mid=mid).order_by(Results.datetime.desc()).first()
-        print(last_result)
+        print("Last Results:", last_result)
         
         if last_result:
             if last_result.system_uptime == 0:
