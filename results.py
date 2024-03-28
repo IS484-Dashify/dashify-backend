@@ -2,6 +2,7 @@ from flask import request, jsonify
 from dotenv import load_dotenv
 from helper import safe_convert
 from models import db, Results
+from helper import getStatusFromMetric
 from app import app
 
 @app.route('/get-all-results', methods=['GET'])
@@ -32,59 +33,36 @@ def get_metrics_by_cid(cid, rows):
         return jsonify({'error': error_message}), 500
 
 
-@app.route('/get-result-status/<int:cid>/<int:mid>', methods=['GET'])
+@app.route('/get-result-status/<int:cid>/<int:mid>', methods=['POST'])
 def get_last_result(cid, mid):
+    thresholds = request.json
     try:
         last_result = Results.query.filter_by(cid=cid, mid=mid).order_by(Results.datetime.desc()).first()
         # app.logger.info("Last Results: %s", last_result)
         # print("Last Results:", last_result, flush=True)
-        
+
+        # Check if any of the metrics exceed the threshold and return the status
+        metricsList = ["disk_usage", "cpu_usage", "memory_usage"]
+
         if last_result:
             if last_result.system_uptime == 0:
                 return jsonify({"status": "Critical"})
             
             statuses = []
-
-            if last_result.disk_usage is not None:
-                if last_result.disk_usage > 90:
-                    statuses.append('Critical')
-                elif last_result.disk_usage > 70:
-                    statuses.append('Warning')
-                else:
-                    statuses.append('Normal')
+            for metric in metricsList:
+                metricValue = getattr(last_result, metric)
+                if metricValue is not None:
+                    status = getStatusFromMetric(metricValue, thresholds["warning"], thresholds["critical"])
+                    statuses.append(status)
 
             if last_result.traffic_in is not None:
-                if last_result.traffic_in > 1000:
-                    statuses.append('Critical')
-                elif last_result.traffic_in > 500:
-                    statuses.append('Warning')
-                else:
-                    statuses.append('Normal')
-
+                status = getStatusFromMetric(last_result.traffic_in, thresholds["traffic_in_warning"], thresholds["traffic_in_critical"])
+                statuses.append(status)
+            
             if last_result.traffic_out is not None:
-                if last_result.traffic_out > 100000:
-                    statuses.append('Critical')
-                elif last_result.traffic_out > 50000:
-                    statuses.append('Warning')
-                else:
-                    statuses.append('Normal')
-
-            if last_result.clock is not None:
-                if last_result.cpu_usage > 90:
-                    statuses.append('Critical')
-                elif last_result.cpu_usage > 70:
-                    statuses.append('Warning')
-                else:
-                    statuses.append('Normal')
-
-            if last_result.system_uptime is not None:
-                if last_result.memory_usage > 90:
-                    statuses.append('Critical')
-                elif last_result.memory_usage > 70:
-                    statuses.append('Warning')
-                else:
-                    statuses.append('Normal')
-
+                status = getStatusFromMetric(last_result.traffic_out, thresholds["traffic_out_warning"], thresholds["traffic_out_critical"])
+                statuses.append(status)
+                
             if 'Critical' in statuses:
                 return jsonify({"status": "Critical"})
             elif 'Warning' in statuses:
