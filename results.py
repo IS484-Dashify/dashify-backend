@@ -34,59 +34,64 @@ def get_metrics_by_cid(cid, rows):
 
 @app.route('/get-result-status/<int:cid>/<int:mid>', methods=['GET'])
 def get_last_result(cid, mid):
-    last_result = Results.query.filter_by(cid=cid, mid=mid).order_by(Results.datetime.desc()).first()
-    print(last_result)
-    
-    if last_result:
-        if last_result.system_uptime == 0:
-            return jsonify({"status": "Critical"})
+    try:
+        last_result = Results.query.filter_by(cid=cid, mid=mid).order_by(Results.datetime.desc()).first()
+        print(last_result)
         
-        statuses = []
+        if last_result:
+            if last_result.system_uptime == 0:
+                return jsonify({"status": "Critical"})
+            
+            statuses = []
 
-        if last_result.disk_usage > 90:
-            statuses.append('Critical')
-        elif last_result.disk_usage > 70:
-            statuses.append('Warning')
+            if last_result.disk_usage > 90:
+                statuses.append('Critical')
+            elif last_result.disk_usage > 70:
+                statuses.append('Warning')
+            else:
+                statuses.append('Normal')
+
+            if last_result.traffic_in > 1000:
+                statuses.append('Critical')
+            elif last_result.traffic_in > 500:
+                statuses.append('Warning')
+            else:
+                statuses.append('Normal')
+
+            if last_result.traffic_out > 100000:
+                statuses.append('Critical')
+            elif last_result.traffic_out > 50000:
+                statuses.append('Warning')
+            else:
+                statuses.append('Normal')
+
+            if last_result.cpu_usage > 90:
+                statuses.append('Critical')
+            elif last_result.cpu_usage > 70:
+                statuses.append('Warning')
+            else:
+                statuses.append('Normal')
+
+            if last_result.memory_usage > 90:
+                statuses.append('Critical')
+            elif last_result.memory_usage > 70:
+                statuses.append('Warning')
+            else:
+                statuses.append('Normal')
+
+            if 'Critical' in statuses:
+                return jsonify({"status": "Critical"})
+            elif 'Warning' in statuses:
+                return jsonify({"status": "Warning"})
+            else:
+                return jsonify({"status": "Normal"})
+
         else:
-            statuses.append('Normal')
-
-        if last_result.traffic_in > 1000:
-            statuses.append('Critical')
-        elif last_result.traffic_in > 500:
-            statuses.append('Warning')
-        else:
-            statuses.append('Normal')
-
-        if last_result.traffic_out > 100000:
-            statuses.append('Critical')
-        elif last_result.traffic_out > 50000:
-            statuses.append('Warning')
-        else:
-            statuses.append('Normal')
-
-        if last_result.cpu_usage > 90:
-            statuses.append('Critical')
-        elif last_result.cpu_usage > 70:
-            statuses.append('Warning')
-        else:
-            statuses.append('Normal')
-
-        if last_result.memory_usage > 90:
-            statuses.append('Critical')
-        elif last_result.memory_usage > 70:
-            statuses.append('Warning')
-        else:
-            statuses.append('Normal')
-
-        if 'Critical' in statuses:
-            return jsonify({"status": "Critical"})
-        elif 'Warning' in statuses:
-            return jsonify({"status": "Warning"})
-        else:
-            return jsonify({"status": "Normal"})
-
-    else:
-        return jsonify({"message": "No result found for the specified cid and mid."})
+            return jsonify({"message": "No result found for the specified cid and mid."})
+    except Exception as e:
+        # Handle the exception
+        error_message = str(e)
+        return jsonify({'error': error_message}), 500
     
 @app.route('/add-result', methods=['POST'])
 def add_result():
