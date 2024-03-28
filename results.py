@@ -36,8 +36,8 @@ def get_metrics_by_cid(cid, rows):
 def get_last_result(cid, mid):
     try:
         last_result = Results.query.filter_by(cid=cid, mid=mid).order_by(Results.datetime.desc()).first()
-        app.logger.info("Last Results: %s", last_result)
-        print("Last Results:", last_result, flush=True)
+        # app.logger.info("Last Results: %s", last_result)
+        # print("Last Results:", last_result, flush=True)
         
         if last_result:
             if last_result.system_uptime == 0:
@@ -45,40 +45,45 @@ def get_last_result(cid, mid):
             
             statuses = []
 
-            if last_result.disk_usage > 90:
-                statuses.append('Critical')
-            elif last_result.disk_usage > 70:
-                statuses.append('Warning')
-            else:
-                statuses.append('Normal')
+            if last_result.disk_usage is not None:
+                if last_result.disk_usage > 90:
+                    statuses.append('Critical')
+                elif last_result.disk_usage > 70:
+                    statuses.append('Warning')
+                else:
+                    statuses.append('Normal')
 
-            if last_result.traffic_in > 1000:
-                statuses.append('Critical')
-            elif last_result.traffic_in > 500:
-                statuses.append('Warning')
-            else:
-                statuses.append('Normal')
+            if last_result.traffic_in is not None:
+                if last_result.traffic_in > 1000:
+                    statuses.append('Critical')
+                elif last_result.traffic_in > 500:
+                    statuses.append('Warning')
+                else:
+                    statuses.append('Normal')
 
-            if last_result.traffic_out > 100000:
-                statuses.append('Critical')
-            elif last_result.traffic_out > 50000:
-                statuses.append('Warning')
-            else:
-                statuses.append('Normal')
+            if last_result.traffic_out is not None:
+                if last_result.traffic_out > 100000:
+                    statuses.append('Critical')
+                elif last_result.traffic_out > 50000:
+                    statuses.append('Warning')
+                else:
+                    statuses.append('Normal')
 
-            if last_result.cpu_usage > 90:
-                statuses.append('Critical')
-            elif last_result.cpu_usage > 70:
-                statuses.append('Warning')
-            else:
-                statuses.append('Normal')
+            if last_result.clock is not None:
+                if last_result.cpu_usage > 90:
+                    statuses.append('Critical')
+                elif last_result.cpu_usage > 70:
+                    statuses.append('Warning')
+                else:
+                    statuses.append('Normal')
 
-            if last_result.memory_usage > 90:
-                statuses.append('Critical')
-            elif last_result.memory_usage > 70:
-                statuses.append('Warning')
-            else:
-                statuses.append('Normal')
+            if last_result.system_uptime is not None:
+                if last_result.memory_usage > 90:
+                    statuses.append('Critical')
+                elif last_result.memory_usage > 70:
+                    statuses.append('Warning')
+                else:
+                    statuses.append('Normal')
 
             if 'Critical' in statuses:
                 return jsonify({"status": "Critical"})
