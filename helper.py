@@ -50,3 +50,14 @@ def safe_convert(value, target_type):
         return target_type(value)
     except (ValueError, TypeError):
         return None
+    
+def getStatusFromMetric(metric, warning, critical):
+    """
+    A function that returns the status of a metric based on the warning and critical thresholds
+    """
+    if metric > critical:
+        return 'Critical'
+    elif metric > warning:
+        return 'Warning'
+    else:
+        return 'Normal'
