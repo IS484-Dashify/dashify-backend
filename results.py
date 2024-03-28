@@ -36,6 +36,7 @@ def get_metrics_by_cid(cid, rows):
 @app.route('/get-result-status/<int:cid>/<int:mid>', methods=['POST'])
 def get_last_result(cid, mid):
     thresholds = request.json
+    # print(f"Thresholds: {thresholds}", flush=True)
     try:
         last_result = Results.query.filter_by(cid=cid, mid=mid).order_by(Results.datetime.desc()).first()
         # app.logger.info("Last Results: %s", last_result)
@@ -53,14 +54,17 @@ def get_last_result(cid, mid):
                 metricValue = getattr(last_result, metric)
                 if metricValue is not None:
                     status = getStatusFromMetric(metricValue, thresholds["warning"], thresholds["critical"])
+                    # print(f"Metric: {metric}, Value: {metricValue}, Status: {status}", flush=True)
                     statuses.append(status)
 
             if last_result.traffic_in is not None:
                 status = getStatusFromMetric(last_result.traffic_in, thresholds["traffic_in_warning"], thresholds["traffic_in_critical"])
+                # print(f"Traffic In: {last_result.traffic_in}, Status: {status}", flush=True)
                 statuses.append(status)
             
             if last_result.traffic_out is not None:
                 status = getStatusFromMetric(last_result.traffic_out, thresholds["traffic_out_warning"], thresholds["traffic_out_critical"])
+                # print(f"Traffic Out: {last_result.traffic_out}, Status: {status}", flush=True)
                 statuses.append(status)
                 
             if 'Critical' in statuses:
