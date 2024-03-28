@@ -72,7 +72,10 @@ def get_all_service_name_and_status():
                 cids = response3.json()['results']
 
                 for cid in cids:
-                    response4 = requests.get(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}')
+                    response = requests.get(f'http://127.0.0.1:5005/get-thresholds-by-cid/{cid}').json()
+                    thresholds = response['results']
+                    
+                    response4 = requests.post(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}', json = thresholds, headers = {'Content-Type': 'application/json'})
                     component_status = response4.json()['status']
                     statuses.append(component_status)
             
