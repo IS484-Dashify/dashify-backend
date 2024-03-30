@@ -68,6 +68,7 @@ def isOngoingEvent(lastCheckedTime, threshold):
     A function that returns whether a notification is ongoing or not
     """
     currentTime = datetime.now()
+    # currentTime = datetime.strptime("2024-03-30 21:26:00", "%Y-%m-%d %H:%M:%S")
     timeDifference = currentTime - lastCheckedTime
     # print("Current time:", currentTime, "Last checked time:", lastCheckedTime)
     maximumAllowedDifference = timedelta(minutes=threshold)
