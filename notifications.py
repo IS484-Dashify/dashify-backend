@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from models import db, Notifications
-from helper import safe_convert
+from helper import safe_convert, isOngoingEvent
+from datetime import datetime
 from app import app
 
 def get_notification_by_cid_and_reason_status(cid, reason, status):
@@ -55,29 +56,40 @@ def add_notification():
         status = data['status']
     )
     
-    metricReasonsArr = ["High Traffic In", "High Disk Usage", "High Traffic Out", "High CPU Usage", "High Memory Usage", "System Down"]
+    metricReasonsArr1 = ["High Disk Usage", "High CPU Usage", "High Memory Usage", "System Down"]
+    metricReasonsArr2 = ["High Traffic In", "High Traffic Out"]
     
     try:
         isOngoing = False
         # for metrics: 'System Down', 'High Disk Ussage', 'High CPU Usage', 'High Memory Usage', check if the notification is ongoing
         # notification is ongoing if lastupdated is within 3 minutes of current time
-        
         # for metrics: 'High Traffic In', 'High Traffic Out', check if the notification is ongoing
         # notification is ongoing if lastupdated is within 5 minute of current time
         
-        # existingNotification = get_notification_by_cid_and_reason_status(newNotification.cid, newNotification.reason, newNotification.status)
-        # return jsonify({"message": "Notification retrieved successfully.", "data": existingNotification.json(), "status_code": 200}), 200
+        existingNotification = get_notification_by_cid_and_reason_status(newNotification.cid, newNotification.reason, newNotification.status)
         
-        
-        
-        
-        db.session.add(newNotification)
-        db.session.commit()
-        
-        return jsonify({"message": "Notification added successfully.", "data": data, "status_code": 200}), 200
+        if existingNotification:
+            if newNotification.reason in metricReasonsArr1:
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, 3)
+            else:
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, 5)
+        else:
+            isOngoing = False
+            
+        print("Ongoing:", isOngoing)
+        if not isOngoing:
+            db.session.add(newNotification)
+            db.session.commit()
+            return jsonify({"message": "Notification added successfully.", "notification_added": newNotification.json(), "status_code": 200}), 200
+        else:
+            existingNotification.lastchecked = datetime.now()
+
+            db.session.merge(existingNotification)
+            db.session.commit()
+            return jsonify({"message": "Notification is ongoing.", "notification_updated": existingNotification.json(), "status_code": 200}), 200
     except Exception as e:  
         app.logger.error('An error occurred: %s', e)
-        return jsonify({"error": "An unexpected error occurCritical", "details": str(e), "status_code": 500}), 500
+        return jsonify({"error": "An unexpected error occurred", "details": str(e), "status_code": 500}), 500
     
 @app.route('/delete-notification', methods=['DELETE'])
 def delete_result():
