@@ -3,22 +3,18 @@ from models import db, Notifications
 from helper import safe_convert
 from app import app
 
+def get_notification_by_cid_and_reason_status(cid, reason, status):
+    try:
+        notification = Notifications.query.filter_by(cid=cid, reason=reason, status=status).order_by(Notifications.datetime.desc(), Notifications.nid.desc()).first()
+        return notification
+    except Exception as e:
+        raise Exception(f"Error occurred while retrieving notification: {str(e)}")
+
 @app.route('/get-all-notifications', methods=['GET'])
 def get_all_notifications():
     all_notifications = Notifications.query.all()
     notifications = [notification.json() for notification in all_notifications]
     return jsonify(notifications)
-
-@app.route('/get-notification/<int:cid>/<string:reason>', methods=['GET'])
-def get_notification(cid, reason):
-    try:
-        notification = Notifications.query.filter_by(cid=cid, reason=reason).order_by(Notifications.datetime.desc()).first()
-        if notification:
-            return jsonify(notification.json()), 200
-        else:
-            return jsonify({"error": f"Notification with cid {cid} and reason {reason} not found"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/mark-notification-as-read/<int:nid>', methods=['PUT'])
@@ -55,7 +51,7 @@ def add_notification():
         isread = data['isread'],
         reason = data['reason'],
         datetime = data['datetime'],
-        lastupdated = data['datetime'],
+        lastchecked = data['datetime'],
         status = data['status']
     )
     
@@ -68,6 +64,9 @@ def add_notification():
         
         # for metrics: 'High Traffic In', 'High Traffic Out', check if the notification is ongoing
         # notification is ongoing if lastupdated is within 5 minute of current time
+        
+        # existingNotification = get_notification_by_cid_and_reason_status(newNotification.cid, newNotification.reason, newNotification.status)
+        # return jsonify({"message": "Notification retrieved successfully.", "data": existingNotification.json(), "status_code": 200}), 200
         
         
         
