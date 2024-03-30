@@ -134,6 +134,7 @@ class Notifications(db.Model):
             "isread": self.isread,
             "reason": self.reason,
             "datetime": self.datetime.strftime('%Y-%m-%d %H:%M:%S'),  # Format datetime as string
+            "lastchecked": self.lastchecked.strftime('%Y-%m-%d %H:%M:%S'), 
             "status": self.status
         }
 
