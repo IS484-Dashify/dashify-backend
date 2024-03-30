@@ -4,9 +4,9 @@ from helper import safe_convert, isOngoingEvent
 from datetime import datetime
 from app import app
 
-def get_notification_by_cid_and_reason_status(cid, reason, status):
+def get_notification_by_cid_and_reason(cid, reason):
     try:
-        notification = Notifications.query.filter_by(cid=cid, reason=reason, status=status).order_by(Notifications.datetime.desc(), Notifications.nid.desc()).first()
+        notification = Notifications.query.filter_by(cid=cid, reason=reason).order_by(Notifications.datetime.desc(), Notifications.nid.desc()).first()
         return notification
     except Exception as e:
         raise Exception(f"Error occurred while retrieving notification: {str(e)}")
@@ -45,6 +45,20 @@ def mark_all_notifications_as_read():
 
 @app.route('/add-notification', methods=['POST'])
 def add_notification():
+    """
+        Used to create a warning or critical alert if notification is not ongoing.
+        Else, updates the lastchecked time of the ongoing notification.
+        
+        # An ongoing notification is:
+        # 1. Is a notification of a given cid and same reason
+        # 2. where the lastupdated time is within a X time frame of the current time
+            for metrics: 'System Down', 'High Disk Usage', 'High CPU Usage', 'High Memory Usage': x is 3 minutes
+            for metrics: 'High Traffic In', 'High Traffic Out', check if the notification is ongoing: x is 5 minutes
+            
+        If the notification is ongoing, the lastchecked time will be updated to current time
+        
+        However, if the notification is ongoing but the status has changed, a new notification will be created.
+    """
     data = request.json
 
     newNotification = Notifications(
@@ -61,12 +75,8 @@ def add_notification():
     
     try:
         isOngoing = False
-        # for metrics: 'System Down', 'High Disk Ussage', 'High CPU Usage', 'High Memory Usage', check if the notification is ongoing
-        # notification is ongoing if lastupdated is within 3 minutes of current time
-        # for metrics: 'High Traffic In', 'High Traffic Out', check if the notification is ongoing
-        # notification is ongoing if lastupdated is within 5 minute of current time
         
-        existingNotification = get_notification_by_cid_and_reason_status(newNotification.cid, newNotification.reason, newNotification.status)
+        existingNotification = get_notification_by_cid_and_reason(newNotification.cid, newNotification.reason)
         
         if existingNotification:
             if newNotification.reason in metricReasonsArr1:
@@ -82,11 +92,17 @@ def add_notification():
             db.session.commit()
             return jsonify({"message": "Notification added successfully.", "notification_added": newNotification.json(), "status_code": 200}), 200
         else:
-            existingNotification.lastchecked = datetime.now()
-
-            db.session.merge(existingNotification)
-            db.session.commit()
-            return jsonify({"message": "Notification is ongoing.", "notification_updated": existingNotification.json(), "status_code": 200}), 200
+            if (existingNotification.status != newNotification.status):
+                db.session.add(newNotification)
+                db.session.commit()
+                return jsonify({"message": "Notification added successfully.", "notification_added": newNotification.json(), "status_code": 200}), 200
+            else:
+                existingNotification.lastchecked = datetime.now()
+                # currentTime = datetime.strptime("2024-03-30 21:26:00", "%Y-%m-%d %H:%M:%S")
+                # existingNotification.lastchecked = currentTime
+                db.session.merge(existingNotification)
+                db.session.commit()
+                return jsonify({"message": "Notification is ongoing.", "notification_updated": existingNotification.json(), "status_code": 200}), 200
     except Exception as e:  
         app.logger.error('An error occurred: %s', e)
         return jsonify({"error": "An unexpected error occurred", "details": str(e), "status_code": 500}), 500
