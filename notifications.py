@@ -9,6 +9,15 @@ def get_all_notifications():
     notifications = [notification.json() for notification in all_notifications]
     return jsonify(notifications)
 
+@app.route('/get-notification/<int:cid>/<str:reason>', methods=['GET'])
+def get_notification(cid, reason):
+    notification = Notifications.query.filter_by(cid=cid, reason=reason).desc().first()
+    if notification:
+        return jsonify(notification.json()), 200
+    else:
+        return jsonify({"error": f"Notification with cid {cid} and reason {reason} not found"}), 404
+
+
 @app.route('/mark-notification-as-read/<int:nid>', methods=['PUT'])
 def mark_notification_as_read(nid):
     notification = Notifications.query.filter_by(nid=nid).first()
@@ -43,9 +52,23 @@ def add_notification():
         isread = data['isread'],
         reason = data['reason'],
         datetime = data['datetime'],
+        lastupdated = data['datetime'],
         status = data['status']
     )
+    
+    # metricReasonsArr = ["High Traffic In", "High Disk Usage", "High Traffic Out", "High CPU Usage", "High Memory Usage", "System Down"]
+    
     try:
+        # isOngoing = False
+        # for metrics: 'System Down', 'High Disk Ussage', 'High CPU Usage', 'High Memory Usage', check if the notification is ongoing
+        # notification is ongoing if lastupdated is within 3 minutes of current time
+        
+        # for metrics: 'High Traffic In', 'High Traffic Out', check if the notification is ongoing
+        # notification is ongoing if lastupdated is within 5 minute of current time
+        
+        
+        
+        
         db.session.add(newNotification)
         db.session.commit()
         
