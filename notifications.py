@@ -130,7 +130,9 @@ def add_column():
     try:
         # Execute SQL ALTER TABLE statement to add a new column
         column_name = "LASTCHECKED"
-        db.engine.execute(f"ALTER TABLE notifications ADD COLUMN {column_name} TEXT")
+        sql_query = f"ALTER TABLE your_table_name ADD COLUMN {column_name} TEXT"
+        db.session.execute(sql_query)
+        db.session.commit()
         return jsonify({"message": f"Column '{column_name}' added successfully"}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
