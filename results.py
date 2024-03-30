@@ -97,7 +97,7 @@ def add_result():
         system_uptime = safe_convert(data['system_uptime'], float),
         memory_usage = safe_convert(data['memory_usage'], float)
     )
-    # TODO: Take care of foreign key error
+
     try:
         db.session.add(newResult)
         db.session.commit()

@@ -108,6 +108,27 @@ def add_notification():
         app.logger.error('An error occurred: %s', e)
         return jsonify({"error": "An unexpected error occurred", "details": str(e), "status_code": 500}), 500
     
+    
+@app.route('/add-insight', methods=['POST'])
+def add_insight():
+    data = request.json
+
+    newNotification = Notifications(
+        cid = safe_convert(data['cid'], int),
+        isread = data['isread'],
+        reason = data['reason'],
+        datetime = data['datetime'],
+        lastchecked = data['datetime'],
+        status = data['status']
+    )
+    
+    try:
+        db.session.add(newNotification)
+        db.session.commit()
+        return jsonify({"message": "Notification added successfully.", "notification_added": newNotification.json(), "status_code": 200}), 200
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e), "status_code": 500}), 500
+
 @app.route('/delete-notification', methods=['DELETE'])
 def delete_result():
     try:
