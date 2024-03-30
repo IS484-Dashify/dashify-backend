@@ -131,7 +131,7 @@ def add_column():
     try:
         # Execute SQL ALTER TABLE statement to add a new column
         column_name = "LASTCHECKED"
-        sql_query = text(f"ALTER TABLE notifications ADD COLUMN {column_name} TEXT")
+        sql_query = text(f"ALTER TABLE notifications ADD COLUMN {column_name} DATETIME")
         db.session.execute(sql_query)
         db.session.commit()
         return jsonify({"message": f"Column '{column_name}' added successfully"}), 200
