@@ -3,6 +3,7 @@ from models import db, Notifications
 from helper import safe_convert, isOngoingEvent
 from datetime import datetime
 from app import app
+from sqlalchemy import text
 
 def get_notification_by_cid_and_reason(cid, reason):
     try:
@@ -130,7 +131,7 @@ def add_column():
     try:
         # Execute SQL ALTER TABLE statement to add a new column
         column_name = "LASTCHECKED"
-        sql_query = f"ALTER TABLE your_table_name ADD COLUMN {column_name} TEXT"
+        sql_query = text(f"ALTER TABLE notifications ADD COLUMN {column_name} TEXT")
         db.session.execute(sql_query)
         db.session.commit()
         return jsonify({"message": f"Column '{column_name}' added successfully"}), 200
