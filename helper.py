@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from models import *
+from datetime import datetime, timedelta
 
 # .first() returns either the item or None, can't use len()
 def doesComponentExist(cid):
@@ -61,3 +62,17 @@ def getStatusFromMetric(metric, warning, critical):
         return 'Warning'
     else:
         return 'Normal'
+    
+def isOngoingEvent(lastCheckedTime, threshold):
+    """
+    A function that returns whether a notification is ongoing or not
+    """
+    currentTime = datetime.now()
+    timeDifference = currentTime - lastCheckedTime
+    # print("Current time:", currentTime, "Last checked time:", lastCheckedTime)
+    maximumAllowedDifference = timedelta(minutes=threshold)
+    # print("Time difference:", timeDifference, "Maximum allowed difference:", maximumAllowedDifference)
+    if timeDifference < maximumAllowedDifference:
+        return True
+    else:
+        return False
