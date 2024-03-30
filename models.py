@@ -124,7 +124,7 @@ class Notifications(db.Model):
     isread = db.Column(db.Boolean, default=False)
     reason = db.Column(db.Text)
     datetime = db.Column(db.DateTime)
-    lastupdated = db.Column(db.DateTime)
+    lastchecked = db.Column(db.DateTime)
     status = db.Column(db.Text)
 
     def json(self):
