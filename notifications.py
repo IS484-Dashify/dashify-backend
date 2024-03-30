@@ -9,13 +9,16 @@ def get_all_notifications():
     notifications = [notification.json() for notification in all_notifications]
     return jsonify(notifications)
 
-@app.route('/get-notification/<int:cid>/<str:reason>', methods=['GET'])
+@app.route('/get-notification/<int:cid>/<string:reason>', methods=['GET'])
 def get_notification(cid, reason):
-    notification = Notifications.query.filter_by(cid=cid, reason=reason).desc().first()
-    if notification:
-        return jsonify(notification.json()), 200
-    else:
-        return jsonify({"error": f"Notification with cid {cid} and reason {reason} not found"}), 404
+    try:
+        notification = Notifications.query.filter_by(cid=cid, reason=reason).order_by(Notifications.datetime.desc()).first()
+        if notification:
+            return jsonify(notification.json()), 200
+        else:
+            return jsonify({"error": f"Notification with cid {cid} and reason {reason} not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/mark-notification-as-read/<int:nid>', methods=['PUT'])
@@ -56,10 +59,10 @@ def add_notification():
         status = data['status']
     )
     
-    # metricReasonsArr = ["High Traffic In", "High Disk Usage", "High Traffic Out", "High CPU Usage", "High Memory Usage", "System Down"]
+    metricReasonsArr = ["High Traffic In", "High Disk Usage", "High Traffic Out", "High CPU Usage", "High Memory Usage", "System Down"]
     
     try:
-        # isOngoing = False
+        isOngoing = False
         # for metrics: 'System Down', 'High Disk Ussage', 'High CPU Usage', 'High Memory Usage', check if the notification is ongoing
         # notification is ongoing if lastupdated is within 3 minutes of current time
         
