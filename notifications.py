@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from models import db, Notifications
 from helper import safe_convert, isOngoingEvent
-from datetime import datetime
+# from datetime import datetime
 from app import app
 from sqlalchemy import text
 
@@ -83,9 +83,9 @@ def add_notification():
         
         if existingNotification:
             if newNotification.reason in metricReasonsArr1:
-                isOngoing = isOngoingEvent(existingNotification.lastchecked, 3)
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, data['datetime'], 3)
             else:
-                isOngoing = isOngoingEvent(existingNotification.lastchecked, 5)
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, data['datetime'], 5)
         else:
             isOngoing = False
             
@@ -100,7 +100,7 @@ def add_notification():
                 db.session.commit()
                 return jsonify({"message": "Notification added successfully.", "notification_added": newNotification.json(), "status_code": 200}), 200
             else:
-                existingNotification.lastchecked = datetime.now()
+                existingNotification.lastchecked = data['datetime']
                 # currentTime = datetime.strptime("2024-03-30 21:26:00", "%Y-%m-%d %H:%M:%S")
                 # existingNotification.lastchecked = currentTime
                 db.session.merge(existingNotification)
