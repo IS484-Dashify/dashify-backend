@@ -70,9 +70,9 @@ def isOngoingEvent(lastCheckedTime, currentTime, threshold):
     # currentTime = datetime.now()
     # currentTime = datetime.strptime("2024-03-30 21:26:00", "%Y-%m-%d %H:%M:%S")
     timeDifference = currentTime - lastCheckedTime
-    # print("Current time:", currentTime, "Last checked time:", lastCheckedTime)
     maximumAllowedDifference = timedelta(minutes=threshold)
-    # print("Time difference:", timeDifference, "Maximum allowed difference:", maximumAllowedDifference)
+    print("Current time:", currentTime, "Last checked time:", lastCheckedTime)
+    print("Time difference:", timeDifference, "Maximum allowed difference:", maximumAllowedDifference)
     if timeDifference < maximumAllowedDifference:
         return True
     else:
