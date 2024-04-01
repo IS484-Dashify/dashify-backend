@@ -28,6 +28,7 @@ def mark_notification_as_read(nid):
             notification.isread = True
             db.session.merge(notification)
             db.session.commit()
+            print("Notification after update:", notification.json(), flush=True)
             return jsonify({"message": f"Notification with nid {nid} marked as read successfully"}), 200
         except Exception as e:
             db.session.rollback() 
