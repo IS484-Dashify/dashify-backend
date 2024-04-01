@@ -83,9 +83,9 @@ def add_notification():
         
         if existingNotification:
             if newNotification.reason in metricReasonsArr1:
-                isOngoing = isOngoingEvent(existingNotification.lastchecked, newNotification['datetime'], 3)
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, newNotification.datetime, 3)
             else:
-                isOngoing = isOngoingEvent(existingNotification.lastchecked, newNotification['datetime'], 5)
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, newNotification.datetime, 5)
         else:
             isOngoing = False
             
