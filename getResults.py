@@ -108,6 +108,7 @@ def processResult():
         
     except Exception as e:
         # Handle the exception
+        print("Error message:", e, flush=True)
         error_message = str(e)
         return jsonify({'error': error_message}), 500
 
