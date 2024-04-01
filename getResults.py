@@ -20,6 +20,7 @@ def processResult():
     }
     try:
         data = request.json
+        print(data)
         rawResult = {
             "mid": int(data['mid']),
             "cid": int(data['cid']),
