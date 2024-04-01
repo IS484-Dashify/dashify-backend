@@ -147,17 +147,17 @@ def delete_result():
         # Return an error response
         return jsonify({"error": "An unexpected error occurred during deletion.", "details": str(e), "status_code": 500}), 500
 
-@app.route('/add-column', methods=['GET'])
-def add_column():
-    try:
-        # Execute SQL ALTER TABLE statement to add a new column
-        column_name = "LASTCHECKED"
-        sql_query = text(f"ALTER TABLE notifications ADD COLUMN {column_name} DATETIME")
-        db.session.execute(sql_query)
-        db.session.commit()
-        return jsonify({"message": f"Column '{column_name}' added successfully"}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+# @app.route('/add-column', methods=['GET'])
+# def add_column():
+#     try:
+#         # Execute SQL ALTER TABLE statement to add a new column
+#         column_name = "LASTCHECKED"
+#         sql_query = text(f"ALTER TABLE notifications ADD COLUMN {column_name} DATETIME")
+#         db.session.execute(sql_query)
+#         db.session.commit()
+#         return jsonify({"message": f"Column '{column_name}' added successfully"}), 200
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
     
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5008)
