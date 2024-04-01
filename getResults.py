@@ -20,7 +20,7 @@ def processResult():
     }
     try:
         data = request.json
-        print("Raw Data:", data)
+        print("Raw Data:", data, flush=True)
         rawResult = {
             "mid": int(data['mid']),
             "cid": int(data['cid']),
@@ -38,7 +38,7 @@ def processResult():
         # * 0. Get threshold values from the database
         response = requests.get(f'http://127.0.0.1:5005/get-thresholds-by-cid/{cid}').json()
         thresholds = response['results']
-        print("Retrieved thresholds:", thresholds, "for cid:", cid)
+        print("Retrieved thresholds:", thresholds, "for cid:", cid, flush=True)
         
         # * 1. Derive statuses from raw data
         # Data from nifi will not be None but string "NULL"
@@ -67,12 +67,12 @@ def processResult():
                     metricStatus = getStatusFromMetric(rawResult["traffic_out"], thresholds['traffic_out_warning'], thresholds['traffic_out_critical'])
                     if metricStatus == 'Critical' or metricStatus == 'Warning':
                         statuses["traffic_out"] = metricStatus
-        print("Statuses:", statuses)
+        print("Statuses:", statuses, flush=True)
             
         # * 2. if any status are Critical/Warning, fire to notification system
         for metric, status in statuses.items():
             if(status == 'Critical' or status == 'Warning'):
-                print("Firing notification for", metric, "with status", status)
+                print("Firing notification for", metric, "with status", status, flush=True)
                 notifJsonBody = {
                     "cid": rawResult['cid'],
                     "isread": False,
