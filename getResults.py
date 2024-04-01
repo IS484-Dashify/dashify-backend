@@ -39,10 +39,11 @@ def processResult():
         thresholds = response['results']
         
         # * 1. Derive statuses from raw data
+        # Data from nifi will not be None but string "NULL"
         metricsList = ["disk_usage", "cpu_usage", "memory_usage"]
         if rawResult:
             statuses = {}
-            if rawResult['system_uptime'] is not None:
+            if rawResult['system_uptime'] is not None or rawResult['system_uptime'] != "NULL":
                 if rawResult['system_uptime'] == 0:
                     statuses['system_uptime'] = 'Critical' # system is down
                 else:
@@ -50,17 +51,17 @@ def processResult():
                     
             if statuses['system_uptime'] == 'Normal':           
                 for metric in metricsList:
-                    if rawResult[metric] is not None:
+                    if rawResult[metric] is not None or rawResult[metric] != "NULL":
                         metricStatus = getStatusFromMetric(rawResult[metric], thresholds['warning'], thresholds['critical'])
                         if metricStatus == 'Critical' or metricStatus == 'Warning':
                             statuses[metric] = metricStatus
                     
-                if rawResult["traffic_in"] is not None:
+                if rawResult["traffic_in"] is not None or rawResult["traffic_in"] != "NULL":
                     metricStatus = getStatusFromMetric(rawResult["traffic_in"], thresholds['traffic_in_warning'], thresholds['traffic_in_critical'])
                     if metricStatus == 'Critical' or metricStatus == 'Warning':
                         statuses["traffic_in"] = metricStatus
                     
-                if rawResult["traffic_out"] is not None:
+                if rawResult["traffic_out"] is not None or rawResult["traffic_out"] != "NULL":
                     metricStatus = getStatusFromMetric(rawResult["traffic_out"], thresholds['traffic_out_warning'], thresholds['traffic_out_critical'])
                     if metricStatus == 'Critical' or metricStatus == 'Warning':
                         statuses["traffic_out"] = metricStatus
