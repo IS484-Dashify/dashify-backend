@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from models import db, Notifications
 from helper import safe_convert, isOngoingEvent
-# from datetime import datetime
+from datetime import datetime
 from app import app
 from sqlalchemy import text
 
@@ -80,12 +80,13 @@ def add_notification():
         isOngoing = False
         
         existingNotification = get_notification_by_cid_and_reason(newNotification.cid, newNotification.reason)
-        
+        currentTime = datetime.strptime(newNotification.datetime, "%Y-%m-%d %H:%M:%S")
+
         if existingNotification:
             if newNotification.reason in metricReasonsArr1:
-                isOngoing = isOngoingEvent(existingNotification.lastchecked, newNotification.datetime, 3)
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, currentTime, 3)
             else:
-                isOngoing = isOngoingEvent(existingNotification.lastchecked, newNotification.datetime, 5)
+                isOngoing = isOngoingEvent(existingNotification.lastchecked, currentTime, 5)
         else:
             isOngoing = False
             
