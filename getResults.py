@@ -25,14 +25,24 @@ def processResult():
             "mid": int(data['mid']),
             "cid": int(data['cid']),
             "datetime" : data['datetime'],
-            "disk_usage": float(data['disk_usage']),
-            "traffic_in": int(data['traffic_in']),
-            "traffic_out": int(data['traffic_out']),
             "clock": float(data['clock']),
-            "cpu_usage": float(data['cpu_usage']),
             "system_uptime": float(data['system_uptime']),
-            "memory_usage": float(data['memory_usage'])
+            # "disk_usage": float(data['disk_usage']),
+            # "traffic_in": int(data['traffic_in']),
+            # "traffic_out": int(data['traffic_out']),
+            # "cpu_usage": float(data['cpu_usage']),
+            # "memory_usage": float(data['memory_usage'])
         }
+        if data['disk_usage'] != "NULL":
+            rawResult["disk_usage"] = float(data['disk_usage'])
+        if data['cpu_usage'] != "NULL":
+            rawResult["cpu_usage"] = float(data['cpu_usage'])
+        if data['memory_usage'] != "NULL":
+            rawResult["memory_usage"] = float(data['memory_usage'])
+        if data['traffic_in'] != "NULL":
+            rawResult["traffic_in"] = int(data['traffic_in'])
+        if data['traffic_out'] != "NULL":
+            rawResult["traffic_out"] = int(data['traffic_out'])
         cid = rawResult['cid']
         
         # * 0. Get threshold values from the database
@@ -45,7 +55,7 @@ def processResult():
         metricsList = ["disk_usage", "cpu_usage", "memory_usage"]
         if rawResult:
             statuses = {}
-            if rawResult['system_uptime'] is not None or rawResult['system_uptime'] != "NULL":
+            if rawResult['system_uptime'] is not None:
                 if rawResult['system_uptime'] == 0:
                     statuses['system_uptime'] = 'Critical' # system is down
                 else:
@@ -53,17 +63,17 @@ def processResult():
                     
             if statuses['system_uptime'] == 'Normal':           
                 for metric in metricsList:
-                    if rawResult[metric] is not None or rawResult[metric] != "NULL":
+                    if rawResult[metric] is not None:
                         metricStatus = getStatusFromMetric(rawResult[metric], thresholds['warning'], thresholds['critical'])
                         if metricStatus == 'Critical' or metricStatus == 'Warning':
                             statuses[metric] = metricStatus
                     
-                if rawResult["traffic_in"] is not None or rawResult["traffic_in"] != "NULL":
+                if rawResult["traffic_in"] is not None:
                     metricStatus = getStatusFromMetric(rawResult["traffic_in"], thresholds['traffic_in_warning'], thresholds['traffic_in_critical'])
                     if metricStatus == 'Critical' or metricStatus == 'Warning':
                         statuses["traffic_in"] = metricStatus
                     
-                if rawResult["traffic_out"] is not None or rawResult["traffic_out"] != "NULL":
+                if rawResult["traffic_out"] is not None:
                     metricStatus = getStatusFromMetric(rawResult["traffic_out"], thresholds['traffic_out_warning'], thresholds['traffic_out_critical'])
                     if metricStatus == 'Critical' or metricStatus == 'Warning':
                         statuses["traffic_out"] = metricStatus
