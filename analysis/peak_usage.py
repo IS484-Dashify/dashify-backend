@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 import requests
 import json
+import pytz
 
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
@@ -122,14 +123,15 @@ for cid, metric_data in highest_hour_by_metric.items():
     for metric, hour in metric_data.items():
         print(f"Metric: {metric}, Highest Hour: {hour}, Average: {highest_average_by_metric[cid][metric]}")
             
+sg_timezone = pytz.timezone('Asia/Singapore')
 
 for cid, metric_data in highest_hour_by_metric.items():
     for metric, hour in metric_data.items():
         hour = int(hour)
         end_hour = int(hour + 1)
         reason = f"{metric} is highest at {highest_average_by_metric[cid][metric]} from {hour}00 to {end_hour}00 over the past week"
-        date = datetime.now()
-        datetime_string = date.strftime('%Y-%m-%d %H:%M:%S')
+        sg_now = datetime.now(sg_timezone)
+        datetime_string = sg_now.strftime('%Y-%m-%d %H:%M:%S')
         notification_data = {
                 'cid': cid,
                 'isread': 0,
