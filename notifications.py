@@ -39,7 +39,7 @@ def mark_notification_as_read(nid):
 @app.route('/mark-all-notifications-as-read', methods=['PUT'])
 def mark_all_notifications_as_read():
     try:
-        Notifications.query.update({Notifications.isRead: True})
+        Notifications.query.update({Notifications.isread: True})
         db.session.commit()
         return jsonify({"message": "All notifications marked as read successfully"}), 200
     except Exception as e:
