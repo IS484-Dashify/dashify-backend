@@ -130,8 +130,8 @@ for cid, metric_data in highest_hour_by_metric.items():
         hour = int(hour)
         end_hour = int(hour + 1)
         reason = f"{metric} is highest at {highest_average_by_metric[cid][metric]} from {hour}00 to {end_hour}00 over the past week"
-        sg_now = datetime.now(sg_timezone)
-        datetime_string = sg_now.strftime('%Y-%m-%d %H:%M:%S')
+        date = datetime.now()
+        datetime_string = date.strftime('%Y-%m-%d %H:%M:%S')
         notification_data = {
                 'cid': cid,
                 'isread': 0,
