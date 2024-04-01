@@ -35,14 +35,24 @@ def processResult():
         }
         if data['disk_usage'] != "NULL":
             rawResult["disk_usage"] = float(data['disk_usage'])
+        else:
+            rawResult["disk_usage"] = None
         if data['cpu_usage'] != "NULL":
             rawResult["cpu_usage"] = float(data['cpu_usage'])
+        else:
+            rawResult["cpu_usage"] = None
         if data['memory_usage'] != "NULL":
             rawResult["memory_usage"] = float(data['memory_usage'])
+        else:
+            rawResult["memory_usage"] = None
         if data['traffic_in'] != "NULL":
             rawResult["traffic_in"] = int(data['traffic_in'])
+        else:
+            rawResult["traffic_in"] = None
         if data['traffic_out'] != "NULL":
             rawResult["traffic_out"] = int(data['traffic_out'])
+        else:
+            rawResult["traffic_out"] = None
         cid = rawResult['cid']
         
         # * 0. Get threshold values from the database
