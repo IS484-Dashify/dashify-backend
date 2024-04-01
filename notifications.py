@@ -22,6 +22,7 @@ def get_all_notifications():
 @app.route('/mark-notification-as-read/<int:nid>', methods=['PUT'])
 def mark_notification_as_read(nid):
     notification = Notifications.query.filter_by(nid=nid).first()
+    print("Notification:", notification, flush=True)
     if notification:
         try:
             notification.isRead = True
