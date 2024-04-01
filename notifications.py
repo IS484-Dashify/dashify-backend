@@ -25,7 +25,7 @@ def mark_notification_as_read(nid):
     print("Notification:", notification.json(), flush=True)
     if notification:
         try:
-            notification.isRead = True
+            notification.isread = True
             db.session.merge(notification)
             db.session.commit()
             return jsonify({"message": f"Notification with nid {nid} marked as read successfully"}), 200
