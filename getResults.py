@@ -96,6 +96,7 @@ def processResult():
                 'message': 'Data processed successfully',
                 'status_code': response["status_code"]
             }
+            print("Data added successfully", flush=True)
             return jsonify(response_data), 200
         else:
             # Return relevant information from the response
