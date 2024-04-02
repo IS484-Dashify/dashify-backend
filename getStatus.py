@@ -62,7 +62,7 @@ def get_all_service_name_and_status():
         output = []
         response1 = requests.get('http://127.0.0.1:5001/get-all-services')
         services = response1.json()['results']
-            
+        print("Services:", services, flush=True)
         # return jsonify({"msg": "Hello World"}), 200
 
         for service in services:
