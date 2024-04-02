@@ -164,6 +164,7 @@ def run_script():
     # Execute the Python script
     try:
         result = subprocess.run(['python', script_path], capture_output=True)
+        print(result.stdout)
         output = result.stdout.decode('utf-8')
     except Exception as e:
         return jsonify({'error': str(e)}), 500
