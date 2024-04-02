@@ -5,6 +5,7 @@ import time
 from models import db
 from flask_cors import CORS
 from os import environ
+import traceback
 
 @app.route('/get-service-status-details/<int:sid>', methods=['GET'])
 def get_service_status_details(sid):
