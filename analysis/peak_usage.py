@@ -62,7 +62,7 @@ def push_notif(json_data):
 
 
 extracted_data = fetch_data_from_microservice()
-print(extracted_data)
+print("extracted data", extracted_data)
 
 # Get start and end timestamps for the past week
 end_time = datetime.now(timezone.utc)
