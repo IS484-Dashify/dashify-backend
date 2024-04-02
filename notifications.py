@@ -4,6 +4,8 @@ from helper import safe_convert, isOngoingEvent
 from datetime import datetime
 from app import app
 from sqlalchemy import text
+import subprocess
+import os
 
 def get_notification_by_cid_and_reason(cid, reason):
     try:
@@ -149,6 +151,25 @@ def delete_result():
         app.logger.error('An error occurred during deletion: %s', e)
         # Return an error response
         return jsonify({"error": "An unexpected error occurred during deletion.", "details": str(e), "status_code": 500}), 500
+
+@app.route('/run-script', methods=['GET'])
+def run_script():
+    script_path = request.args.get('script_path')
+    # Run the Python script
+    result = subprocess.run(['python', script_path], capture_output=True)
+    # Validate script path
+    if not os.path.exists(script_path):
+        return jsonify({'error': 'Script not found'}), 404
+    
+    # Execute the Python script
+    try:
+        result = subprocess.run(['python', script_path], capture_output=True)
+        output = result.stdout.decode('utf-8')
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+    return jsonify({'output': output})
+
 
 # @app.route('/add-column', methods=['GET'])
 # def add_column():

@@ -2,7 +2,6 @@ from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 import requests
 import json
-import pytz
 
 def fetch_data_from_microservice():
     # Define the URL of the microservice's API endpoint
@@ -123,7 +122,6 @@ for cid, metric_data in highest_hour_by_metric.items():
     for metric, hour in metric_data.items():
         print(f"Metric: {metric}, Highest Hour: {hour}, Average: {highest_average_by_metric[cid][metric]}")
             
-sg_timezone = pytz.timezone('Asia/Singapore')
 
 for cid, metric_data in highest_hour_by_metric.items():
     for metric, hour in metric_data.items():
