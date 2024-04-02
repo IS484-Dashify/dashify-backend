@@ -170,6 +170,23 @@ def run_script():
     
     return jsonify({'output': output})
 
+@app.route('/delete-all-notifications', methods=['DELETE'])
+def delete_all_notifications():
+    try:
+        # Perform the deletion based on the provided criteria
+        deleted_count = Notifications.query.delete()
+        
+        # Commit the changes to the database
+        db.session.commit()
+
+        # Return a response indicating the number of rows deleted
+        return jsonify({"message": f"{deleted_count} rows deleted successfully.", "status_code": 200}), 200
+    
+    except Exception as e:  
+        # Log any errors that occur
+        app.logger.error('An error occurred during deletion: %s', e)
+        # Return an error response
+        return jsonify({"error": "An unexpected error occurred during deletion.", "details": str(e), "status_code": 500}), 500
 
 # @app.route('/add-column', methods=['GET'])
 # def add_column():
