@@ -133,6 +133,26 @@ def delete_result():
         # Return an error response
         return jsonify({"error": "An unexpected error occurred during deletion.", "details": str(e), "status_code": 500}), 500
 
+@app.route('/reset-cid-8', methods=['GET'])
+def reset_cid_8():
+
+    # Create mock data
+    result1 = Results(datetime = "2024-04-05 21:00:00", mid = 3, cid = 8, disk_usage = 0.35, traffic_in = 80, traffic_out = 5000, clock = 1709200000.0, cpu_usage = 2.35, system_uptime = 500, memory_usage = 0.35)
+    result2 = Results(datetime = "2024-04-05 21:01:00", mid = 3, cid = 8, disk_usage = 0.4, traffic_in = 90, traffic_out = 5100, clock = 1709200000.0, cpu_usage = 2.45, system_uptime = 600, memory_usage = 0.35)
+    result3 = Results(datetime = "2024-04-05 21:02:00", mid = 3, cid = 8, disk_usage = 0.38, traffic_in = 86, traffic_out = 5200, clock = 1709200000.0, cpu_usage = 2.56, system_uptime = 700, memory_usage = 0.45)
+    
+    try:
+        # Delete all results where cid = 8
+        Results.query.filter_by(cid=8).delete()
+        
+        # Add mock data
+        db.session.add_all([result1, result2, result3])
+        db.session.commit()
+        
+        return jsonify({"message": "CID 8 Reset Successfully", "status_code": 200}), 200
+    except Exception as e:  
+        app.logger.error('An error occurred: %s', e)
+        return jsonify({"error": "An unexpected error occurred", "details": str(e), "status_code": 500}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5004)
