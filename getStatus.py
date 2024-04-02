@@ -91,6 +91,12 @@ def get_all_service_name_and_status():
             
             else:
                 output.append({"sid": sid, "name":service['name'] ,"status" : 'Normal'})
+                
+    except requests.RequestException as e:
+        # Get the traceback information
+        tb_info = traceback.format_exc()
+        error_message = f"Request error: {e}. Traceback: {tb_info}"
+        return jsonify({'error': error_message}), 500
     except Exception as e:
         # Handle the exception
         error_message = str(e)
