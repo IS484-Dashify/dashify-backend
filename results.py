@@ -59,11 +59,15 @@ def get_metrics_by_cid(cid, mins):
                     aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i].cpu_usage, "Datetime": formatted_datetime})
                     aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i].disk_usage, "Datetime": formatted_datetime })
                     aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i].memory_usage, "Datetime": formatted_datetime})
+                else:
+                    break
 
             for i in range(0, len(rawTrafficResultsList), minutesIntervalDict[mins]):
                 if rawResultsList[i].datetime >= startTime:
                     formatted_datetime = rawTrafficResultsList[i].datetime.strftime("%d %b %y, %#I:%M:%S%p")
                     aggregatedResults["Traffic Metrics"].append({"Traffic In": rawTrafficResultsList[i].traffic_in, "Traffic Out": rawTrafficResultsList[i].traffic_out, "Datetime": formatted_datetime })
+                else:
+                    break
 
             sys_uptime = rawResultsList[0].system_uptime
             if sys_uptime == 0:
@@ -71,7 +75,7 @@ def get_metrics_by_cid(cid, mins):
                 sys_downtime = calSystemDowntime(rawResultsList[0]["datetime"], earliestZeroDateString)
             else:
                 sys_downtime = 0
-                
+
             response = {
                 "msg": "successfully retrieved results for cid " + str(cid),
                 "data": {
