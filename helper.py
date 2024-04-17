@@ -80,7 +80,7 @@ def findHighestZeroDatetime(rawResults):
     return earliest_zero_datetime
 
 def calSystemDowntime(currentDateString, earliestZeroDateString):
-    return (datetime.strptime(currentDateString, '%Y-%m-%d %H:%M:%S') - datetime.strptime(earliestZeroDateString, '%Y-%m-%d %H:%M:%S')).total_seconds()
+    return (currentDateString - earliestZeroDateString).total_seconds()
 def isOngoingEvent(lastCheckedTime, currentTime, threshold):
     """
     A function that returns whether a notification is ongoing or not
