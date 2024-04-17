@@ -50,7 +50,7 @@ def get_metrics_by_cid(cid, rows):
                     tempTrafficResults["Traffic In"].append({"Traffic In": rawResults[i]["traffic_in"], "Datetime": rawResults[i]["datetime"]})
                     tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResults[i]["traffic_out"], "Datetime": rawResults[i]["datetime"]})
             else:
-                for i in range(0, len(rawResults)):
+                for i in range(0, len(rawResultsList)):
                     aggregatedResults["CPU Usage"].append({"CPU Usage": rawResults[i]["cpu_usage"], "Datetime": rawResults[i]["datetime"]})
                     aggregatedResults["Disk Usage"].append({"Disk Usage": rawResults[i]["disk_usage"], "Datetime": rawResults[i]["datetime"]})
                     aggregatedResults["Memory Usage"].append({"Memory Usage": rawResults[i]["memory_usage"], "Datetime": rawResults[i]["datetime"]})
