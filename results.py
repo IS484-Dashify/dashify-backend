@@ -1,3 +1,4 @@
+import datetime
 from flask import request, jsonify
 from dotenv import load_dotenv
 from helper import safe_convert
@@ -65,7 +66,8 @@ def get_metrics_by_cid(cid, rows):
             ]
             print("Datetime_array:", datetime_array)
             unique_datetime_array = set(datetime_array)
-            sorted_datetime_array = sorted(unique_datetime_array, key=lambda x: dt.strptime(x, '%Y-%m-%dT%H:%M:%S'))
+            sorted_datetime_array = sorted(unique_datetime_array, key=lambda dt: datetime.strptime(dt, '%Y-%m-%dT%H:%M:%S'))
+
             aggregatedResults["Traffic Metrics"] = []
             for dt in sorted_datetime_array:
                 traffic_in_arr = tempTrafficResults['Traffic In']
