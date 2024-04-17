@@ -11,16 +11,6 @@ def get_all_results():
     results = [result.json() for result in all_results]
     return jsonify({"results": results})
 
-"""
-returns {
-    msg,
-    data: {
-        CPU Usage, Disk Usage, Memory Usage, Traffic Metrics
-        Sys uptime
-        Sys DT (can be 0 if system is up)
-    }
-}
-"""
 @app.route('/get-result/<int:cid>/<int:rows>', methods=['GET'])
 def get_metrics_by_cid(cid, rows):
     minutesIntervalDict = {
@@ -36,7 +26,7 @@ def get_metrics_by_cid(cid, rows):
         129600: 60 # return rows every 60 minutes = 2160 rows (1300, 1400, 1500, 1600)
     }
     try:
-        results = Results.query.filter_by(cid=cid).order_by(Results.datetime.desc()).limit(rows)
+        results = Results.query.filter_by(cid=cid).order_by(Results.datetime.desc()).limit(129600)
         results = []
         response = {}
         if results:
