@@ -11,7 +11,7 @@ def get_all_results():
     all_results = Results.query.all()
     results = [result.json() for result in all_results]
     return jsonify({"results": results})
-
+    
 @app.route('/get-result/<int:cid>/<int:rows>', methods=['GET'])
 def get_metrics_by_cid(cid, rows):
     minutesIntervalDict = {
@@ -28,8 +28,6 @@ def get_metrics_by_cid(cid, rows):
     }
     try:
         rawResults = Results.query.filter_by(cid=cid)\
-                        .filter(Results.traffic_in.isnot(None))\
-                        .filter(Results.traffic_out.isnot(None))\
                         .order_by(Results.datetime.desc())\
                         .limit(129600)
         response = {}
@@ -48,21 +46,40 @@ def get_metrics_by_cid(cid, rows):
             print("Datetime:", rawResultsList[0].datetime)  
             if cid != 1 and cid != 7: # if not live component
                 for i in range(0, len(rawResultsList), minutesIntervalDict[rows]):
-                    datetime_format = "%d %b %y, %-I.%M%p"
-                    formatted_datetime = rawResultsList[i].datetime.strftime("%d %b %y, %I:%M%p").lower()
+                    formatted_datetime = rawResultsList[i].datetime.strftime("%d %b %y, %#I:%M:%S%p")
                     aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i].cpu_usage, "Datetime": formatted_datetime})
-                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i].disk_usage, "Datetime": formatted_datetime})
+                    aggregatedResults["Disk Usage"].append({"Traffic In": rawResultsList[i].traffic_in, "Datetime": formatted_datetime })
                     aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i].memory_usage, "Datetime": formatted_datetime})
-                    aggregatedResults["Traffic Metrics"].append({"Traffic In": rawResultsList[i].traffic_in, "Traffic Out": rawResultsList[i].traffic_out, "Datetime": formatted_datetime})
+                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResultsList[i].traffic_in, "Datetime": rawResultsList[i].datetime})
+                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResultsList[i].traffic_out, "Datetime": rawResultsList[i].datetime})
             else:
                 for i in range(0, len(rawResultsList)):
-                    datetime_format = "%d %b %y, %-I.%M%p"
-                    formatted_datetime = rawResultsList[i].datetime.strftime("%d %b %y, %I:%M%p").lower()
+                    formatted_datetime = rawResultsList[i].datetime.strftime("%d %b %y, %#I:%M:%S%p")
                     aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i].cpu_usage, "Datetime": formatted_datetime})
                     aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i].disk_usage, "Datetime": formatted_datetime})
                     aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i].memory_usage, "Datetime": formatted_datetime})
-                    aggregatedResults["Traffic Metrics"].append({"Traffic In": rawResultsList[i].traffic_in, "Traffic Out": rawResultsList[i].traffic_out, "Datetime": formatted_datetime})
-            
+                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResultsList[i].traffic_in, "Datetime": rawResultsList[i].datetime})
+                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResultsList[i].traffic_out, "Datetime": rawResultsList[i].datetime})
+
+            datetime_array = [
+                item['Datetime'] for item in tempTrafficResults['Traffic In']
+            ] + [
+                item['Datetime'] for item in tempTrafficResults['Traffic Out']
+            ]
+            unique_datetime_array = set(datetime_array)
+            sorted_datetime_array = sorted(unique_datetime_array, reverse=True)
+            traffic_in_arr = tempTrafficResults['Traffic In']
+            traffic_out_arr = tempTrafficResults['Traffic Out']
+            for dt in sorted_datetime_array:
+                trafficInObj = getObjectWithDatetimeInArray(traffic_in_arr, dt, 'Traffic In')
+                trafficOutObj = getObjectWithDatetimeInArray(traffic_out_arr, dt, 'Traffic Out')
+                if trafficInObj and trafficOutObj:
+                    aggregatedResults["Traffic Metrics"].append({
+                        "Traffic In": trafficInObj["Traffic In"],
+                        "Traffic Out": trafficOutObj["Traffic Out"],
+                        "Datetime": dt.strftime("%d %b %y, %I:%M%p")
+                    })
+
             sys_uptime = rawResultsList[0].system_uptime
             if sys_uptime == 0:
                 earliestZeroDateString = findHighestZeroDatetime(rawResultsList)['datetime']
@@ -80,6 +97,7 @@ def get_metrics_by_cid(cid, rows):
                     "System Downtime": sys_downtime
                 }
             }                    
+            print("Datetime_array 1st element:", datetime_array[0])
             # Return JSON response with the single result
             return jsonify(response), 200
         else:
