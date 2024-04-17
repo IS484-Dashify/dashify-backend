@@ -1,3 +1,4 @@
+import datetime
 from flask import request, jsonify
 from models import *
 
@@ -61,3 +62,20 @@ def getStatusFromMetric(metric, warning, critical):
         return 'Warning'
     else:
         return 'Normal'
+    
+def isObjectWithDatetimeInArray(array, datetime):
+    for obj in array:
+        if obj["Datetime"] == datetime:
+            return obj
+    return None
+
+def findHighestZeroDatetime(rawResults):
+    earliest_zero_datetime = rawResults[0]
+    for i in range(0, len(rawResults)):
+        if rawResults[i]["System Uptime"] == 0:
+            earliest_zero_datetime = rawResults[i]
+    # print("Earliest Zero Datetime:", earliest_zero_datetime)
+    return earliest_zero_datetime
+
+def calSystemDowntime(currentDateString, earliestZeroDateString):
+    return (datetime.strptime(currentDateString, '%Y-%m-%d %H:%M:%S') - datetime.strptime(earliestZeroDateString, '%Y-%m-%d %H:%M:%S')).total_seconds()
