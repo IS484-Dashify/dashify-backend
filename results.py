@@ -41,21 +41,23 @@ def get_metrics_by_cid(cid, rows):
                 "Traffic In": [],
                 "Traffic Out": []
             }
-            rawResultsList = list(rawResults)
+            rawResultsList = rawResults.all()
             if cid != 1 and cid != 7: # if not live component
                 for i in range(0, len(rawResultsList), minutesIntervalDict[rows]):
-                    aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i]["cpu_usage"], "Datetime": rawResultsList[i]["datetime"]})
-                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i]["disk_usage"], "Datetime": rawResultsList[i]["datetime"]})
-                    aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i]["memory_usage"], "Datetime": rawResultsList[i]["datetime"]})
-                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResultsList[i]["traffic_in"], "Datetime": rawResultsList[i]["datetime"]})
-                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResultsList[i]["traffic_out"], "Datetime": rawResultsList[i]["datetime"]})
+                    aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i].cpu_usage, "Datetime": rawResultsList[i].datetime})
+                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i].disk_usage, "Datetime": rawResultsList[i].datetime})
+                    aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i].memory_usage, "Datetime": rawResultsList[i].datetime})
+                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResultsList[i].traffic_in, "Datetime": rawResultsList[i].datetime})
+                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResultsList[i].traffic_out, "Datetime": rawResultsList[i].datetime})
+
             else:
                 for i in range(0, len(rawResultsList)):
-                    aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i]["cpu_usage"], "Datetime": rawResultsList[i]["datetime"]})
-                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i]["disk_usage"], "Datetime": rawResultsList[i]["datetime"]})
-                    aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i]["memory_usage"], "Datetime": rawResultsList[i]["datetime"]})
-                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResultsList[i]["traffic_in"], "Datetime": rawResultsList[i]["datetime"]})
-                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResultsList[i]["traffic_out"], "Datetime": rawResultsList[i]["datetime"]})
+                    aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i].cpu_usage, "Datetime": rawResultsList[i].datetime})
+                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i].disk_usage, "Datetime": rawResultsList[i].datetime})
+                    aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i].memory_usage, "Datetime": rawResultsList[i].datetime})
+                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResultsList[i].traffic_in, "Datetime": rawResultsList[i].datetime})
+                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResultsList[i].traffic_out, "Datetime": rawResultsList[i].datetime})
+
             datetime_array = [
                 item['Datetime'] for item in tempTrafficResults['Traffic In']
             ] + [
