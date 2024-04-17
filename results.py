@@ -63,17 +63,18 @@ def get_metrics_by_cid(cid, rows):
             ] + [
                 item['Datetime'] for item in tempTrafficResults['Traffic Out']
             ]
+            print("Datetime_array:", datetime_array)
             unique_datetime_array = set(datetime_array)
-            sorted_datetime_array = sorted(unique_datetime_array, key=lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M:%S'))
+            sorted_datetime_array = sorted(unique_datetime_array, key=lambda x: dt.strptime(x, '%Y-%m-%dT%H:%M:%S'))
             aggregatedResults["Traffic Metrics"] = []
-            for datetime in sorted_datetime_array:
+            for dt in sorted_datetime_array:
                 traffic_in_arr = tempTrafficResults['Traffic In']
                 traffic_out_arr = tempTrafficResults['Traffic Out']
-                if isObjectWithDatetimeInArray(traffic_in_arr, datetime) and isObjectWithDatetimeInArray(traffic_out_arr, datetime):
+                if isObjectWithDatetimeInArray(traffic_in_arr, dt) and isObjectWithDatetimeInArray(traffic_out_arr, dt):
                     aggregatedResults["Traffic Metrics"].append({
                         "Traffic In": traffic_in_arr["Traffic In"],
                         "Traffic Out": traffic_out_arr["Traffic Out"],
-                        "Datetime": datetime
+                        "Datetime": dt
                     })
             sys_uptime = rawResultsList[0]["system_uptime"]
             if sys_uptime == 0:
