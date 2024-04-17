@@ -71,8 +71,8 @@ def get_metrics_by_cid(cid, mins):
 
             sys_uptime = rawResultsList[0].system_uptime
             if sys_uptime == 0:
-                earliestZeroDateString = findHighestZeroDatetime(rawResultsList)['datetime']
-                sys_downtime = calSystemDowntime(rawResultsList[0]["datetime"], earliestZeroDateString)
+                earliestZeroDateString = findHighestZeroDatetime(rawResultsList).datetime
+                sys_downtime = calSystemDowntime(rawResultsList[0].datetime, earliestZeroDateString)
             else:
                 sys_downtime = 0
 
@@ -93,7 +93,6 @@ def get_metrics_by_cid(cid, mins):
         else:
             # Return an empty response with status code 404 if no results are found
             return jsonify({"msg": "No results found for cid " + str(cid)}), 404
-
     except Exception as e:
         # Handle any exceptions that occur during query execution
         print("Error message: ", str(e))
