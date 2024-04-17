@@ -41,7 +41,7 @@ def get_metrics_by_cid(cid, rows):
                 "Traffic In": [],
                 "Traffic Out": []
             }
-            rawResultsList = rawResults.all()
+            rawResultsList = list(rawResults)
             if cid != 1 and cid != 7: # if not live component
                 for i in range(0, len(rawResultsList), minutesIntervalDict[rows]):
                     aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i]["cpu_usage"], "Datetime": rawResultsList[i]["datetime"]})
