@@ -66,7 +66,6 @@ def getStatusFromMetric(metric, warning, critical):
     
 def getObjectWithDatetimeInArray(array, datetime, trafficType):
     for obj in array:
-        print("obj:", obj)
         if obj["Datetime"] == datetime and obj[trafficType] != "NULL" and obj[trafficType] is not None:
             return obj
     return None
