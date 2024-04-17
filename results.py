@@ -79,7 +79,7 @@ def get_metrics_by_cid(cid, rows):
             else:
                 sys_downtime = 0
             response = {
-                "msg": "success",
+                "msg": "successfully retrieved results for cid " + str(cid),
                 "data": {
                     "CPU Usage": aggregatedResults["CPU Usage"],
                     "Disk Usage": aggregatedResults["Disk Usage"],
@@ -93,7 +93,7 @@ def get_metrics_by_cid(cid, rows):
             return jsonify(response), 200
         else:
             # Return an empty response with status code 404 if no results are found
-            return jsonify({}), 404
+            return jsonify({"msg": "No results found for cid " + str(cid)}), 404
 
     except Exception as e:
         # Handle any exceptions that occur during query execution
