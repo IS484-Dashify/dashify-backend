@@ -101,6 +101,7 @@ def get_metrics_by_cid(cid, rows):
 
     except Exception as e:
         # Handle any exceptions that occur during query execution
+        print("Error message: ", str(e))
         error_message = str(e)
         return jsonify({'error': error_message}), 500
 
