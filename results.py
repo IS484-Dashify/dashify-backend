@@ -26,13 +26,9 @@ def get_metrics_by_cid(cid, rows):
         129600: 60 # return rows every 60 minutes = 2160 rows (1300, 1400, 1500, 1600)
     }
     try:
-        results = Results.query.filter_by(cid=cid).order_by(Results.datetime.desc()).limit(129600)
-        results = []
+        rawResults = Results.query.filter_by(cid=cid).order_by(Results.datetime.desc()).limit(129600)
         response = {}
-        if results:
-            for row in results:
-                results.append(row.json())
-
+        if rawResults:
             aggregatedResults = {
                 "CPU Usage": [],
                 "Disk Usage": [],
@@ -46,19 +42,19 @@ def get_metrics_by_cid(cid, rows):
                 "Traffic Out": []
             }
             if cid != 1 and cid != 7: # if not live component
-                for i in range(0, len(results), minutesIntervalDict[rows]):
-                    aggregatedResults["CPU Usage"].append({"CPU Usage": results[i]["cpu_usage"], "Datetime": results[i]["datetime"]})
-                    aggregatedResults["Disk Usage"].append({"Disk Usage": results[i]["disk_usage"], "Datetime": results[i]["datetime"]})
-                    aggregatedResults["Memory Usage"].append({"Memory Usage": results[i]["memory_usage"], "Datetime": results[i]["datetime"]})
-                    tempTrafficResults["Traffic In"].append({"Traffic In": results[i]["traffic_in"], "Datetime": results[i]["datetime"]})
-                    tempTrafficResults["Traffic Out"].append({"Traffic Out": results[i]["traffic_out"], "Datetime": results[i]["datetime"]})
+                for i in range(0, len(rawResults), minutesIntervalDict[rows]):
+                    aggregatedResults["CPU Usage"].append({"CPU Usage": rawResults[i]["cpu_usage"], "Datetime": rawResults[i]["datetime"]})
+                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResults[i]["disk_usage"], "Datetime": rawResults[i]["datetime"]})
+                    aggregatedResults["Memory Usage"].append({"Memory Usage": rawResults[i]["memory_usage"], "Datetime": rawResults[i]["datetime"]})
+                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResults[i]["traffic_in"], "Datetime": rawResults[i]["datetime"]})
+                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResults[i]["traffic_out"], "Datetime": rawResults[i]["datetime"]})
             else:
-                for i in range(0, len(results)):
-                    aggregatedResults["CPU Usage"].append({"CPU Usage": results[i]["cpu_usage"], "Datetime": results[i]["datetime"]})
-                    aggregatedResults["Disk Usage"].append({"Disk Usage": results[i]["disk_usage"], "Datetime": results[i]["datetime"]})
-                    aggregatedResults["Memory Usage"].append({"Memory Usage": results[i]["memory_usage"], "Datetime": results[i]["datetime"]})
-                    tempTrafficResults["Traffic In"].append({"Traffic In": results[i]["traffic_in"], "Datetime": results[i]["datetime"]})
-                    tempTrafficResults["Traffic Out"].append({"Traffic Out": results[i]["traffic_out"], "Datetime": results[i]["datetime"]})
+                for i in range(0, len(rawResults)):
+                    aggregatedResults["CPU Usage"].append({"CPU Usage": rawResults[i]["cpu_usage"], "Datetime": rawResults[i]["datetime"]})
+                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResults[i]["disk_usage"], "Datetime": rawResults[i]["datetime"]})
+                    aggregatedResults["Memory Usage"].append({"Memory Usage": rawResults[i]["memory_usage"], "Datetime": rawResults[i]["datetime"]})
+                    tempTrafficResults["Traffic In"].append({"Traffic In": rawResults[i]["traffic_in"], "Datetime": rawResults[i]["datetime"]})
+                    tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResults[i]["traffic_out"], "Datetime": rawResults[i]["datetime"]})
             datetime_array = [
                 item['Datetime'] for item in tempTrafficResults['Traffic In']
             ] + [
@@ -76,10 +72,10 @@ def get_metrics_by_cid(cid, rows):
                         "Traffic Out": traffic_out_arr["Traffic Out"],
                         "Datetime": datetime
                     })
-            sys_uptime = results[0]["system_uptime"]
+            sys_uptime = rawResults[0]["system_uptime"]
             if sys_uptime == 0:
-                earliestZeroDateString = findHighestZeroDatetime(results)['datetime']
-                sys_downtime = calSystemDowntime(results[0]["datetime"], earliestZeroDateString)
+                earliestZeroDateString = findHighestZeroDatetime(rawResults)['datetime']
+                sys_downtime = calSystemDowntime(rawResults[0]["datetime"], earliestZeroDateString)
             else:
                 sys_downtime = 0
             response = {
