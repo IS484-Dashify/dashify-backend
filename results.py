@@ -79,10 +79,10 @@ def get_metrics_by_cid(cid, mins):
             response = {
                 "msg": "successfully retrieved results for cid " + str(cid),
                 "data": {
-                    "CPU Usage": aggregatedResults["CPU Usage"],
-                    "Disk Usage": aggregatedResults["Disk Usage"],
-                    "Memory Usage": aggregatedResults["Memory Usage"],
-                    "Traffic Metrics": aggregatedResults["Traffic Metrics"],
+                    "CPU Usage": aggregatedResults["CPU Usage"][::-1],
+                    "Disk Usage": aggregatedResults["Disk Usage"][::-1],
+                    "Memory Usage": aggregatedResults["Memory Usage"][::-1],
+                    "Traffic Metrics": aggregatedResults["Traffic Metrics"][::-1],
                     "System Uptime": sys_uptime,
                     "System Downtime": sys_downtime
                 }
