@@ -73,10 +73,10 @@ def get_metrics_by_cid(cid, rows):
                         "Traffic Out": traffic_out_arr["Traffic Out"],
                         "Datetime": datetime
                     })
-            sys_uptime = rawResults[0]["system_uptime"]
+            sys_uptime = rawResultsList[0]["system_uptime"]
             if sys_uptime == 0:
-                earliestZeroDateString = findHighestZeroDatetime(rawResults)['datetime']
-                sys_downtime = calSystemDowntime(rawResults[0]["datetime"], earliestZeroDateString)
+                earliestZeroDateString = findHighestZeroDatetime(rawResultsList)['datetime']
+                sys_downtime = calSystemDowntime(rawResultsList[0]["datetime"], earliestZeroDateString)
             else:
                 sys_downtime = 0
             response = {
