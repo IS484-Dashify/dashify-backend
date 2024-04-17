@@ -50,7 +50,6 @@ def get_metrics_by_cid(cid, rows):
                     aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i].memory_usage, "Datetime": rawResultsList[i].datetime})
                     tempTrafficResults["Traffic In"].append({"Traffic In": rawResultsList[i].traffic_in, "Datetime": rawResultsList[i].datetime})
                     tempTrafficResults["Traffic Out"].append({"Traffic Out": rawResultsList[i].traffic_out, "Datetime": rawResultsList[i].datetime})
-
             else:
                 for i in range(0, len(rawResultsList)):
                     aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i].cpu_usage, "Datetime": rawResultsList[i].datetime})
@@ -65,17 +64,19 @@ def get_metrics_by_cid(cid, rows):
                 item['Datetime'] for item in tempTrafficResults['Traffic Out']
             ]
             unique_datetime_array = set(datetime_array)
-            sorted_datetime_array = sorted(unique_datetime_array)
+            sorted_datetime_array = sorted(unique_datetime_array, reverse=True)
             aggregatedResults["Traffic Metrics"] = []
             traffic_in_arr = tempTrafficResults['Traffic In']
             traffic_out_arr = tempTrafficResults['Traffic Out']
             for dt in sorted_datetime_array:
-                trafficInObj = getObjectWithDatetimeInArray(traffic_in_arr, dt)
-                trafficOutObj = getObjectWithDatetimeInArray(traffic_out_arr, dt)
-                if getObjectWithDatetimeInArray(traffic_in_arr, dt) and getObjectWithDatetimeInArray(traffic_out_arr, dt):
+                trafficInObj = getObjectWithDatetimeInArray(traffic_in_arr, dt, 'Traffic In')
+                trafficOutObj = getObjectWithDatetimeInArray(traffic_out_arr, dt, 'Traffic Out')
+                # print("trafficInObj:", trafficInObj)
+                # print("trafficOutObj:", trafficOutObj)
+                if trafficInObj and trafficOutObj:
                     aggregatedResults["Traffic Metrics"].append({
-                        "Traffic In": trafficInObj,
-                        "Traffic Out": trafficOutObj,
+                        "Traffic In": trafficInObj['Traffic In'],
+                        "Traffic Out": trafficOutObj['Traffic Out'],
                         "Datetime": dt
                     })
             sys_uptime = rawResultsList[0].system_uptime
