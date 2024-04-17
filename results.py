@@ -3,7 +3,7 @@ from flask import request, jsonify
 from dotenv import load_dotenv
 from helper import safe_convert
 from models import db, Results
-from helper import getStatusFromMetric, isObjectWithDatetimeInArray, findHighestZeroDatetime, calSystemDowntime
+from helper import getStatusFromMetric, getObjectWithDatetimeInArray, findHighestZeroDatetime, calSystemDowntime
 from app import app
 
 @app.route('/get-all-results', methods=['GET'])
@@ -67,16 +67,18 @@ def get_metrics_by_cid(cid, rows):
             unique_datetime_array = set(datetime_array)
             sorted_datetime_array = sorted(unique_datetime_array)
             aggregatedResults["Traffic Metrics"] = []
+            traffic_in_arr = tempTrafficResults['Traffic In']
+            traffic_out_arr = tempTrafficResults['Traffic Out']
             for dt in sorted_datetime_array:
-                traffic_in_arr = tempTrafficResults['Traffic In']
-                traffic_out_arr = tempTrafficResults['Traffic Out']
-                if isObjectWithDatetimeInArray(traffic_in_arr, dt) and isObjectWithDatetimeInArray(traffic_out_arr, dt):
+                trafficInObj = getObjectWithDatetimeInArray(traffic_in_arr, dt)
+                trafficOutObj = getObjectWithDatetimeInArray(traffic_out_arr, dt)
+                if getObjectWithDatetimeInArray(traffic_in_arr, dt) and getObjectWithDatetimeInArray(traffic_out_arr, dt):
                     aggregatedResults["Traffic Metrics"].append({
-                        "Traffic In": traffic_in_arr["Traffic In"],
-                        "Traffic Out": traffic_out_arr["Traffic Out"],
+                        "Traffic In": trafficInObj,
+                        "Traffic Out": trafficOutObj,
                         "Datetime": dt
                     })
-            sys_uptime = rawResultsList[0]["system_uptime"]
+            sys_uptime = rawResultsList[0].system_uptime
             if sys_uptime == 0:
                 earliestZeroDateString = findHighestZeroDatetime(rawResultsList)['datetime']
                 sys_downtime = calSystemDowntime(rawResultsList[0]["datetime"], earliestZeroDateString)

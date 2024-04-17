@@ -64,7 +64,7 @@ def getStatusFromMetric(metric, warning, critical):
     else:
         return 'Normal'
     
-def isObjectWithDatetimeInArray(array, datetime):
+def getObjectWithDatetimeInArray(array, datetime):
     for obj in array:
         if obj["Datetime"] == datetime:
             return obj
@@ -72,8 +72,9 @@ def isObjectWithDatetimeInArray(array, datetime):
 
 def findHighestZeroDatetime(rawResults):
     earliest_zero_datetime = rawResults[0]
+    print("Earliest Zero Datetime:", earliest_zero_datetime)
     for i in range(0, len(rawResults)):
-        if rawResults[i]["System Uptime"] == 0:
+        if rawResults[i].system_uptime == 0:
             earliest_zero_datetime = rawResults[i]
     # print("Earliest Zero Datetime:", earliest_zero_datetime)
     return earliest_zero_datetime
