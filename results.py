@@ -170,7 +170,7 @@ def add_result():
         system_uptime = safe_convert(data['system_uptime'], float),
         memory_usage = safe_convert(data['memory_usage'], float)
     )
-    # TODO: Take care of foreign key error
+
     try:
         db.session.add(newResult)
         db.session.commit()
@@ -206,6 +206,33 @@ def delete_result():
         # Return an error response
         return jsonify({"error": "An unexpected error occurred during deletion.", "details": str(e), "status_code": 500}), 500
 
+@app.route('/reset-cid-8', methods=['GET'])
+def reset_cid_8():
+
+    # Create mock data
+    result1 = Results(datetime = "2024-04-05 21:00:00", mid = 3, cid = 8, disk_usage = 0.35, traffic_in = 80, traffic_out = 5000, clock = 1709200000.0, cpu_usage = 2.35, system_uptime = 500, memory_usage = 0.35)
+    result2 = Results(datetime = "2024-04-05 21:01:00", mid = 3, cid = 8, disk_usage = 0.4, traffic_in = 90, traffic_out = 5100, clock = 1709200000.0, cpu_usage = 2.45, system_uptime = 600, memory_usage = 0.35)
+    result3 = Results(datetime = "2024-04-05 21:02:00", mid = 3, cid = 8, disk_usage = 0.38, traffic_in = 86, traffic_out = 5200, clock = 1709200000.0, cpu_usage = 2.56, system_uptime = 700, memory_usage = 0.45)
+    result4 = Results(datetime = "2024-04-05 21:03:00", mid = 3, cid = 8, disk_usage = 0.42, traffic_in = 95, traffic_out = 5300, clock = 1709200000.0, cpu_usage = 2.65, system_uptime = 800, memory_usage = 0.55)
+    result5 = Results(datetime = "2024-04-05 21:04:00", mid = 3, cid = 8, disk_usage = 0.45, traffic_in = 100, traffic_out = 5400, clock = 1709200000.0, cpu_usage = 2.75, system_uptime = 900, memory_usage = 0.65)
+    result6 = Results(datetime = "2024-04-05 21:05:00", mid = 3, cid = 8, disk_usage = 0.48, traffic_in = 105, traffic_out = 5500, clock = 1709200000.0, cpu_usage = 2.85, system_uptime = 1000, memory_usage = 0.75)
+    result7 = Results(datetime = "2024-04-05 21:06:00", mid = 3, cid = 8, disk_usage = 0.5, traffic_in = 110, traffic_out = 5600, clock = 1709200000.0, cpu_usage = 2.95, system_uptime = 1100, memory_usage = 0.85)
+    result8 = Results(datetime = "2024-04-05 21:07:00", mid = 3, cid = 8, disk_usage = 0.55, traffic_in = 115, traffic_out = 5700, clock = 1709200000.0, cpu_usage = 3.05, system_uptime = 1200, memory_usage = 0.95)
+    result9 = Results(datetime = "2024-04-05 21:08:00", mid = 3, cid = 8, disk_usage = 0.6, traffic_in = 120, traffic_out = 5800, clock = 1709200000.0, cpu_usage = 3.15, system_uptime = 1300, memory_usage = 1.05)
+    result10 = Results(datetime = "2024-04-05 21:09:00", mid = 3, cid = 8, disk_usage = 0.65, traffic_in = 125, traffic_out = 5900, clock = 1709200000.0, cpu_usage = 3.25, system_uptime = 1400, memory_usage = 1.15)
+    
+    try:
+        # Delete all results where cid = 8
+        Results.query.filter_by(cid=8).delete()
+        
+        # Add mock data
+        db.session.add_all([result1, result2, result3, result4, result5, result6, result7, result8, result9, result10])
+        db.session.commit()
+        
+        return jsonify({"message": "CID 8 Reset Successfully", "status_code": 200}), 200
+    except Exception as e:  
+        app.logger.error('An error occurred: %s', e)
+        return jsonify({"error": "An unexpected error occurred", "details": str(e), "status_code": 500}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5004)

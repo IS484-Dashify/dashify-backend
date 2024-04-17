@@ -1,6 +1,7 @@
 import datetime
 from flask import request, jsonify
 from models import *
+from datetime import datetime, timedelta
 
 # .first() returns either the item or None, can't use len()
 def doesComponentExist(cid):
@@ -79,3 +80,19 @@ def findHighestZeroDatetime(rawResults):
 
 def calSystemDowntime(currentDateString, earliestZeroDateString):
     return (datetime.strptime(currentDateString, '%Y-%m-%d %H:%M:%S') - datetime.strptime(earliestZeroDateString, '%Y-%m-%d %H:%M:%S')).total_seconds()
+def isOngoingEvent(lastCheckedTime, currentTime, threshold):
+    """
+    A function that returns whether a notification is ongoing or not
+    """
+    # currentTime = datetime.now()
+    # currentTime = datetime.strptime("2024-03-30 21:26:00", "%Y-%m-%d %H:%M:%S")
+    # lastCheckedTime = datetime.strptime(lastCheckedTime, "%Y-%m-%d %H:%M:%S")
+    
+    timeDifference = currentTime - lastCheckedTime
+    maximumAllowedDifference = timedelta(minutes=threshold)
+    print("Current time:", currentTime, "Last checked time:", lastCheckedTime)
+    print("Time difference:", timeDifference, "Maximum allowed difference:", maximumAllowedDifference)
+    if timeDifference < maximumAllowedDifference:
+        return True
+    else:
+        return False
