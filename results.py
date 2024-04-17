@@ -64,7 +64,7 @@ def get_metrics_by_cid(cid, rows):
             ] + [
                 item['Datetime'] for item in tempTrafficResults['Traffic Out']
             ]
-            print("Datetime_array:", datetime_array)
+            print("Datetime_array 1st element:", datetime_array[0])
             unique_datetime_array = set(datetime_array)
             sorted_datetime_array = sorted(unique_datetime_array, key=lambda dt: datetime.strptime(dt, '%Y-%m-%dT%H:%M:%S'))
 
