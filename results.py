@@ -38,9 +38,9 @@ def get_metrics_by_cid(cid, rows):
                 "CPU Usage": [],
                 "Disk Usage": [],
                 "Memory Usage": [],
-                "Traffic In": [],
-                "Traffic Out": [],
-                "Traffic Metrics": []
+                "Traffic Metrics": [],
+                # "Traffic In": [],
+                # "Traffic Out": [],
             }
             tempTrafficResults = {
                 "Traffic In": [],
@@ -96,10 +96,10 @@ def get_metrics_by_cid(cid, rows):
             response = {
                 "msg": "successfully retrieved results for cid " + str(cid),
                 "data": {
-                    "CPU Usage": aggregatedResults["CPU Usage"],
-                    "Disk Usage": aggregatedResults["Disk Usage"],
-                    "Memory Usage": aggregatedResults["Memory Usage"],
-                    "Traffic Metrics": aggregatedResults["Traffic Metrics"],
+                    "CPU Usage": aggregatedResults["CPU Usage"][ : rows // minutesIntervalDict[rows]],
+                    "Disk Usage": aggregatedResults["Disk Usage"][ : rows // minutesIntervalDict[rows]],
+                    "Memory Usage": aggregatedResults["Memory Usage"][ : rows // minutesIntervalDict[rows]],
+                    "Traffic Metrics": aggregatedResults["Traffic Metrics"][ : rows // minutesIntervalDict[rows]],
                     "System Uptime": sys_uptime,
                     "System Downtime": sys_downtime
                 }
