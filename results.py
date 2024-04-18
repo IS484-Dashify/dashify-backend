@@ -143,7 +143,7 @@ def get_last_result(cid, mid):
                 return jsonify({"status": "Normal"})
 
         else:
-            return jsonify({"message": "No result found for the specified cid and mid."})
+            return jsonify({"message": "No result found for the specified cid and mid.", "status" : "Normal"})
     except Exception as e:
         # Handle the exception
         error_message = str(e)
