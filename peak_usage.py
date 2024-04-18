@@ -127,7 +127,12 @@ for cid, metric_data in highest_hour_by_metric.items():
     for metric, hour in metric_data.items():
         hour = int(hour)
         end_hour = int(hour + 1)
-        reason = f"{metric} is highest at {highest_average_by_metric[cid][metric]} from {hour}00 to {end_hour}00 over the past week"
+        if hour < 10 and end_hour < 10:
+            reason = f"Throughout the past week, the highest average {metric} is {highest_average_by_metric[cid][metric]}%, observed betweem 0{hour}00 and 0{end_hour}00 each day"
+        elif hour >= 10 and end_hour >= 10:
+            reason = f"Throughout the past week, the highest average {metric} is {highest_average_by_metric[cid][metric]}%, observed betweem {hour}00 and {end_hour}00 each day"
+        elif hour < 10 and end_hour >= 10:
+            reason = f"Throughout the past week, the highest average {metric} is {highest_average_by_metric[cid][metric]}%, observed betweem 0{hour}00 and {end_hour}00 each day"
         date = datetime.now()
         datetime_string = date.strftime('%Y-%m-%d %H:%M:%S')
         notification_data = {

@@ -43,12 +43,12 @@ def add_component():
     try:
         requests.post(environ.get('createThresholdURL'), json={
             "cid": data.get('cid'),
-            "Warning": 80,
+            "Warning": 60,
             "Critical": 90,
             "TrafficInWarning": 800,
             "TrafficInCritical": 1000,
             "TrafficOutWarning": 50000,
-            "TrafficOutCritical": 10000
+            "TrafficOutCritical": 100000
         })
     except Exception as e:
         return jsonify({'error': 'There was an error creating the new component\'s threshold: ' + str(e)})
