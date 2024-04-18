@@ -92,7 +92,11 @@ def get_all_service_name_and_status():
                     thresholds = response['results']
                     
                     response4 = requests.post(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}', json = thresholds, headers = {'Content-Type': 'application/json'})
-                    component_status = response4.json()['status']
+                    try:
+                        component_status = response4.json()['status']
+                    except:
+                        component_status = 'Critical'
+
                     statuses.append(component_status)
             
             if 'Critical' in statuses:
