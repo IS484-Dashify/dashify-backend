@@ -92,7 +92,16 @@ def get_metrics_by_cid(cid, mins):
             return jsonify(response), 200
         else:
             # Return an empty response with status code 404 if no results are found
-            return jsonify({"msg": "No results found for cid " + str(cid)}), 404
+            # return jsonify({"msg": "No results found for cid " + str(cid)}), 404
+            return jsonify({"msg": "No results found for cid " + str(cid), "data": {
+                "CPU Usage": [],
+                "Disk Usage": [],
+                "Memory Usage": [],
+                "Traffic Metrics": [],
+                "System Uptime": 1,
+                "System Downtime": 0
+            }})
+        
     except Exception as e:
         # Handle any exceptions that occur during query execution
         print("Error message: ", str(e))
@@ -143,7 +152,7 @@ def get_last_result(cid, mid):
                 return jsonify({"status": "Normal"})
 
         else:
-            return jsonify({"message": "No result found for the specified cid and mid."})
+            return jsonify({"message": "No result found for the specified cid and mid.", "status" : "Normal"})
     except Exception as e:
         # Handle the exception
         error_message = str(e)
