@@ -45,8 +45,8 @@ def get_all_names_and_country():
         details = {
         "cName": componentName,
         "country": country,
-        "mName":machineName,
-        "sName":serviceName
+        "mName": machineName,
+        "sName": serviceName
         }
         output[component["cid"]] = details
     return jsonify(output)

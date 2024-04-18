@@ -62,6 +62,7 @@ def push_notif(json_data):
 
 
 extracted_data = fetch_data_from_microservice()
+print("extracted data", extracted_data)
 
 # Get start and end timestamps for the past week
 end_time = datetime.now(timezone.utc)
@@ -79,6 +80,7 @@ count_by_hour_cid = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
 # Parse data and aggregate
 for entry in data_past_week:
+    print(entry)
     cid = entry["cid"]
     disk_usage = entry["disk_usage"]
     cpu_usage = entry["cpu_usage"]

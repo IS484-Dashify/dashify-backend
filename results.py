@@ -1,8 +1,9 @@
+from datetime import datetime, timedelta
 from flask import request, jsonify
 from dotenv import load_dotenv
 from helper import safe_convert
 from models import db, Results
-from helper import getStatusFromMetric
+from helper import getStatusFromMetric, getObjectWithDatetimeInArray, findHighestZeroDatetime, calSystemDowntime
 from app import app
 
 @app.route('/get-all-results', methods=['GET'])
@@ -10,25 +11,91 @@ def get_all_results():
     all_results = Results.query.all()
     results = [result.json() for result in all_results]
     return jsonify({"results": results})
-
-@app.route('/get-result/<int:cid>/<int:rows>', methods=['GET'])
-def get_metrics_by_cid(cid, rows):
+    
+@app.route('/get-result/<int:cid>/<int:mins>', methods=['GET'])
+def get_metrics_by_cid(cid, mins):
+    minutesIntervalDict = {
+        15: 1, # return rows every minute
+        30: 1, # return rows every minute
+        60: 1, # return rows every minute
+        180: 3, # return rows every 3 minutes = 60 rows
+        360: 5, # return rows every 5 minutes = 72 rows
+        720: 6, # return rows every 6 minutes = 120 rows
+        1440: 6, # return rows every 6 minutes = 240 rows
+        10080: 15, # return rows every 15 minutes = 672 rows (1300, 1315, 1330, 1345)
+        43200: 30, # return rows every 30 minutes = 1440 rows (1300, 1330, 1400, 1430)
+        129600: 60 # return rows every 60 minutes = 2160 rows (1300, 1400, 1500, 1600)
+    }
     try:
-        results = Results.query.filter_by(cid=cid).order_by(Results.datetime.desc()).limit(rows)
-        results_json = []
-        if results:
+        first_entry = Results.query.filter_by(cid=cid).order_by(Results.datetime.desc()).first()
+        response = {}
+        if first_entry:
+            ninetyDaysAGo = first_entry.datetime - timedelta(minutes=129600) 
+            # Retrieve all rows where datetime is within the last 90 days of the first entry in descending order
+            rawTrafficResults = Results.query.filter(
+                Results.cid == cid,
+                Results.datetime >= ninetyDaysAGo,
+                Results.traffic_in.isnot(None),
+                Results.traffic_out.isnot(None)
+            ).order_by(Results.datetime.desc())
 
-            for row in results:
-                results_json.append(row.json())
-                
+            rawResults = Results.query.filter(
+                Results.cid == cid,
+                Results.datetime >= ninetyDaysAGo
+            ).order_by(Results.datetime.desc())
+            aggregatedResults = {
+                "CPU Usage": [],
+                "Disk Usage": [],
+                "Memory Usage": [],
+                "Traffic Metrics": [],
+            }
+            rawResultsList = rawResults.all()
+            rawTrafficResultsList = rawTrafficResults.all()
+            startTime = first_entry.datetime - timedelta(minutes=mins) # refers to lower boundary of selectedTimeRange
+
+            for i in range(0, len(rawResultsList), minutesIntervalDict[mins]):
+                if rawResultsList[i].datetime >= startTime:
+                    formatted_datetime = rawResultsList[i].datetime.strftime("%d %b %y, %#I:%M:%S%p")
+                    aggregatedResults["CPU Usage"].append({"CPU Usage": rawResultsList[i].cpu_usage, "Datetime": formatted_datetime})
+                    aggregatedResults["Disk Usage"].append({"Disk Usage": rawResultsList[i].disk_usage, "Datetime": formatted_datetime })
+                    aggregatedResults["Memory Usage"].append({"Memory Usage": rawResultsList[i].memory_usage, "Datetime": formatted_datetime})
+                else:
+                    break
+
+            for i in range(0, len(rawTrafficResultsList), minutesIntervalDict[mins]):
+                if rawResultsList[i].datetime >= startTime:
+                    formatted_datetime = rawTrafficResultsList[i].datetime.strftime("%d %b %y, %#I:%M:%S%p")
+                    aggregatedResults["Traffic Metrics"].append({"Traffic In": rawTrafficResultsList[i].traffic_in, "Traffic Out": rawTrafficResultsList[i].traffic_out, "Datetime": formatted_datetime })
+                else:
+                    break
+
+            sys_uptime = rawResultsList[0].system_uptime
+            if sys_uptime == 0:
+                earliestZeroDateString = findHighestZeroDatetime(rawResultsList).datetime
+                sys_downtime = calSystemDowntime(rawResultsList[0].datetime, earliestZeroDateString)
+            else:
+                sys_downtime = 0
+
+            response = {
+                "msg": "successfully retrieved results for cid " + str(cid),
+                "data": {
+                    "CPU Usage": aggregatedResults["CPU Usage"][::-1],
+                    "Disk Usage": aggregatedResults["Disk Usage"][::-1],
+                    "Memory Usage": aggregatedResults["Memory Usage"][::-1],
+                    "Traffic Metrics": aggregatedResults["Traffic Metrics"][::-1],
+                    "System Uptime": sys_uptime,
+                    "System Downtime": sys_downtime
+                }
+            }                    
+
             # Return JSON response with the single result
-            return jsonify(results_json), 200
+            return jsonify(response), 200
         else:
             # Return an empty response with status code 404 if no results are found
-            return jsonify({}), 404
-
+            return jsonify({"msg": "No results found for cid " + str(cid)}), 404
     except Exception as e:
         # Handle any exceptions that occur during query execution
+        print("Error message: ", str(e))
         error_message = str(e)
         return jsonify({'error': error_message}), 500
 
@@ -46,6 +113,7 @@ def get_last_result(cid, mid):
         metricsList = ["disk_usage", "cpu_usage", "memory_usage"]
 
         if last_result:
+            print("System uptime:", last_result.system_uptime)
             if last_result.system_uptime == 0:
                 return jsonify({"status": "Critical"})
             

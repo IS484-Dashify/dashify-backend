@@ -1,3 +1,4 @@
+import datetime
 from flask import request, jsonify
 from models import *
 from datetime import datetime, timedelta
@@ -63,6 +64,23 @@ def getStatusFromMetric(metric, warning, critical):
     else:
         return 'Normal'
     
+def getObjectWithDatetimeInArray(array, datetime, trafficType):
+    for obj in array:
+        if obj["Datetime"] == datetime and obj[trafficType] != "NULL" and obj[trafficType] is not None:
+            return obj
+    return None
+
+def findHighestZeroDatetime(rawResults):
+    earliest_zero_datetime = rawResults[0]
+    print("Earliest Zero Datetime:", earliest_zero_datetime)
+    for i in range(0, len(rawResults)):
+        if rawResults[i].system_uptime == 0:
+            earliest_zero_datetime = rawResults[i]
+    # print("Earliest Zero Datetime:", earliest_zero_datetime)
+    return earliest_zero_datetime
+
+def calSystemDowntime(currentDateString, earliestZeroDateString):
+    return (currentDateString - earliestZeroDateString).total_seconds()
 def isOngoingEvent(lastCheckedTime, currentTime, threshold):
     """
     A function that returns whether a notification is ongoing or not

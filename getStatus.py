@@ -9,53 +9,64 @@ import traceback
 
 @app.route('/get-service-status-details/<int:sid>', methods=['GET'])
 def get_service_status_details(sid):
-    output = {}
-    response2 = requests.get(f'http://127.0.0.1:5002/get-mid-by-sid/{sid}')
-    mids = response2.json()['results']
+    try:
+        output = {}
+        response2 = requests.get(f'http://127.0.0.1:5002/get-mid-by-sid/{sid}')
+        mids = response2.json()['results']
 
-    for mid in mids:
-        component_statuses = []
-        all_statuses = []
-        response3 = requests.get(f'http://127.0.0.1:5002/get-machine-details-by-mid/{mid}')
-        data = response3.json()
-        app.logger.info("Response 3:", data)
-        machine_details = response3.json()
-        response4 = requests.get(f'http://127.0.0.1:5003/get-cid-by-mid/{mid}')
-        cids = response4.json()['results']
+        for mid in mids:
+            component_statuses = []
+            all_statuses = []
+            response3 = requests.get(f'http://127.0.0.1:5002/get-machine-details-by-mid/{mid}')
+            data = response3.json()
+            app.logger.info("Response 3:", data)
+            machine_details = response3.json()
+            response4 = requests.get(f'http://127.0.0.1:5003/get-cid-by-mid/{mid}')
+            cids = response4.json()['results']
 
-        output[mid] = {'status': 'red',
-                        'location': machine_details['location'],
-                        'country': machine_details['country'],
-                        'mName' : machine_details['name'],
-                        'iso': machine_details['iso']}
+            output[mid] = {'status': 'red',
+                            'location': machine_details['location'],
+                            'country': machine_details['country'],
+                            'mName' : machine_details['name'],
+                            'iso': machine_details['iso']}
 
-        for cid in cids:
+            for cid in cids:
 
-            response = requests.get(f'http://127.0.0.1:5005/get-thresholds-by-cid/{cid}').json()
-            thresholds = response['results']
+                response = requests.get(f'http://127.0.0.1:5005/get-thresholds-by-cid/{cid}').json()
+                thresholds = response['results']
+                
+                response5 = requests.post(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}', json = thresholds, headers = {'Content-Type': 'application/json'})
+                component_status = response5.json()['status']
+                response6 = requests.get(f'http://127.0.0.1:5003/get-component-details-by-cid/{cid}')
+                component_name = response6.json()['name']
+                component_statuses.append({'cName':component_name,
+                                        'cid': cid, 
+                                        'cStatus':component_status})
+                all_statuses.append(component_status)
+        
+            if 'Critical' in all_statuses:
+                output[mid]['status'] = 'Critical'
             
-            response5 = requests.post(f'http://127.0.0.1:5004/get-result-status/{cid}/{mid}', json = thresholds, headers = {'Content-Type': 'application/json'})
-            component_status = response5.json()['status']
-            response6 = requests.get(f'http://127.0.0.1:5003/get-component-details-by-cid/{cid}')
-            component_name = response6.json()['name']
-            component_statuses.append({'cName':component_name,
-                                       'cid': cid, 
-                                      'cStatus':component_status})
-            all_statuses.append(component_status)
+            elif 'Warning' in all_statuses:
+                output[mid]['status'] = 'Warning'
+            
+            else:
+                output[mid]['status'] = 'Normal'
+
+            output[mid]['components'] = component_statuses
+
+        # Return the final response
+        return jsonify(output)
     
-        if 'Critical' in all_statuses:
-            output[mid]['status'] = 'Critical'
-        
-        elif 'Warning' in all_statuses:
-            output[mid]['status'] = 'Warning'
-        
-        else:
-            output[mid]['status'] = 'Normal'
-
-        output[mid]['components'] = component_statuses
-
-    # Return the final response
-    return jsonify(output)
+    except requests.RequestException as e:
+        # Get the traceback information
+        tb_info = traceback.format_exc()
+        error_message = f"Request error: {e}. Traceback: {tb_info}"
+        return jsonify({'error': error_message}), 500
+    except Exception as e:
+        # Handle the exception
+        error_message = str(e)
+        return jsonify({'error': error_message}), 500
 
 @app.route('/get-all-service-name-and-status', methods=['GET'])
 def get_all_service_name_and_status():
