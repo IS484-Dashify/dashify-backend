@@ -93,7 +93,15 @@ def get_metrics_by_cid(cid, mins):
         else:
             # Return an empty response with status code 404 if no results are found
             # return jsonify({"msg": "No results found for cid " + str(cid)}), 404
-            return jsonify({"msg": "No results found for cid " + str(cid), "data": []})
+            return jsonify({"msg": "No results found for cid " + str(cid), "data": {
+                "CPU Usage": [],
+                "Disk Usage": [],
+                "Memory Usage": [],
+                "Traffic Metrics": [],
+                "System Uptime": 1,
+                "System Downtime": 0
+            }})
+        
     except Exception as e:
         # Handle any exceptions that occur during query execution
         print("Error message: ", str(e))
